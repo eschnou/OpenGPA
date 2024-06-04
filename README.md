@@ -1,9 +1,9 @@
-# OpenGPA: Open General Purpose Assistant
+# OpenGPA: Open-source General Purpose Assistant
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/eschnou?style=social)](https://twitter.com/eschnou) &ensp;
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**OpenGPA** is an Open-source, extensible. General Purpose Assistant. A self-hosted solution boasting capabilities similar to
+**OpenGPA** is an Open-source General Purpose Assistant. A self-hosted solution boasting capabilities similar to
 popular GPTs.
 
 - Free and open source, deploy anywhere, customize to your needs

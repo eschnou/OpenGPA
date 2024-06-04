@@ -1,22 +1,26 @@
-# OpenGPA: Open and extensible general purpose assistant
+# OpenGPA: Open General Purpose Assistant
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/eschnou?style=social)](https://twitter.com/eschnou) &ensp;
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**OpenGPA** is an Open and extensible General Purpose Assistant. A self-hosted solution boasting capabilities similar to
+**OpenGPA** is an Open-source, extensible. General Purpose Assistant. A self-hosted solution boasting capabilities similar to
 popular GPTs.
 
-- Free and open source, deploy anywhere, your data won't leave your server
-- Support for all major LLMs such as **OpenAI GPT4** but works best with open-source self-hosted models such as LLama
-- Extensible framework allows to plug your own actions
+- Free and open source, deploy anywhere, customize to your needs
+- Support for [all major LLMs](https://docs.spring.io/spring-ai/reference/api/chatmodel.html) such as LLama, Mistral, Anthropic, OpenAI, etc.
+- Off-line first. You can run on your own box with a local LLM. Data won't leave the server. All the power of GPT without the data privacy nightmare.
+- Extensible framework allows to plug your own actions, such as calling into internal services and APIs
 - Supports the [Agent Protocol](https://github.com/AI-Engineer-Foundation/agent-protocol) for easy integration in a nascent ecosystem
-
-In an Agentic workflow, one or more LLMs are used as the *brain* of an agent to reason and invoke actions. They are used with a [chain-of-thought](https://www.promptingguide.ai/techniques/cot) prompting approach and augmented with components like Actions, Reflection, Memory, 
-Data Augmentation (RAG), etc.
+- Simple UI exposing insight on the GPA internal reasoning and actions
 
 ![Screenshot of AutoGPT UI connected to opengpa](documentation/opengpa_ui.png)
 
-In particular, opengpa is using the [ReAct](https://arxiv.org/abs/2210.03629) approach to verbally reason on the next step, decide on the
+## :pencil2: Design principles
+
+OpenGPA is much more than a UI on top of a LLM. It implements an Agentic workflow, with one or more LLMs are used as the *brain* of an agent 
+to reason and invoke actions, and augmented with components like Reflection, Memory, Data Augmentation (RAG), etc.
+
+In particular, OpenGpa is using the [ReAct](https://arxiv.org/abs/2210.03629) approach to verbally reason on the next step, decide on the
 action to execute, and observe the outcome.
 
 ```
@@ -37,6 +41,8 @@ action to execute, and observe the outcome.
 }
 ```
 
+Action selection is based on a catalog of action that can easily be extended through code. You could add an action
+to tap into an internal service to fetch some data, or a workflow engine to trigger a next step, etc.
 
 ## 🛠️️ Key Features
 

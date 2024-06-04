@@ -1,4 +1,4 @@
-# 0XEE: Open and extensible general purpose assistant
+# OpenGPA: Open and extensible general purpose assistant
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/eschnou?style=social)](https://twitter.com/eschnou) &ensp;
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -14,7 +14,7 @@ popular GPTs.
 In an Agentic workflow, one or more LLMs are used as the *brain* of an agent to reason and invoke actions. They are used with a [chain-of-thought](https://www.promptingguide.ai/techniques/cot) prompting approach and augmented with components like Actions, Reflection, Memory, 
 Data Augmentation (RAG), etc.
 
-![Screenshot of AutoGPT UI connected to opengpa](documentation/opengpa_autogpt_ui.png)
+![Screenshot of AutoGPT UI connected to opengpa](documentation/opengpa_ui.png)
 
 In particular, opengpa is using the [ReAct](https://arxiv.org/abs/2210.03629) approach to verbally reason on the next step, decide on the
 action to execute, and observe the outcome.

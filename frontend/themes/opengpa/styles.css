@@ -89,15 +89,14 @@
   align-items: center;
   width: 100%;
   color: #555;
-  background-color: #e0e0e0;
   padding: 10px;
   text-decoration: none;
   border-radius: 5px;
+  background-color: #e0e0e0;
   border: none;
   cursor: pointer;
   text-align: left; /* Align text to the left */
-  margin: 0;
-  box-sizing: border-box; /* Ensure padding does not add to element's size */
+  text-overflow: ellipsis;
 }
 
 .task-item:hover {
@@ -116,8 +115,4 @@
 
 .bot-message {
 
-}
-
-.task-item vaadin-button::part(label) {
-  text-align: left;
 }

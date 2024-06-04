@@ -84,7 +84,7 @@ for configuration options and the spring-ai documentation to configure support f
 
 ```bash
 mvn clean package -Pproduction
-OPENAI_API_KEY=sk-*** java -jar target/opengpa-service-0.0.1-SNAPSHOT.jar
+OPENAI_API_KEY=sk-*** java -jar target/opengpa-full-0.0.1-SNAPSHOT.jar
 ```
 
 Open the UI on [http://localhost:8000](http://localhost:8000)

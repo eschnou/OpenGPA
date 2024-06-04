@@ -27,7 +27,7 @@ import java.util.List;
 @Route("")
 public class MainView extends VerticalLayout {
 
-    public static final int HISTORY_LABEL_SIZE = 20;
+    public static final int HISTORY_LABEL_SIZE = 35;
     private final TaskService taskService;
 
     private Task currentTask;

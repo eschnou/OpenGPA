@@ -13,7 +13,9 @@ popular GPTs.
 - Supports the [Agent Protocol](https://github.com/AI-Engineer-Foundation/agent-protocol) for easy integration in a nascent ecosystem
 - Simple UI exposing insight on the GPA internal reasoning and actions
 
-![Screenshot of AutoGPT UI connected to opengpa](documentation/opengpa_ui.png)
+<p align="center">
+  <img src="https://s3.eu-west-1.amazonaws.com/files.eschnou.com/opengpa_ui.png" width="640" />
+</p>
 
 ## :pencil2: Design principles
 

@@ -52,8 +52,8 @@ public class WriteFileAction implements Action {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .message(String.format("The file %s has been written to the Agent workspace.", request.get("filename")))
-                .output(String.format("The file %s has been written to the Agent workspace.", request.get("filename")))
+                .summary(String.format("The file %s has been written to the Agent workspace.", request.get("filename")))
+                .result(String.format("The file %s has been written to the Agent workspace.", request.get("filename")))
                 .documents(Arrays.asList(workspaceDocument))
                 .build();
     }

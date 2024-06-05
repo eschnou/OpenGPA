@@ -38,8 +38,9 @@ public class OutputMessageAction implements Action {
         log.debug("Outputmessage action message={}", input.get("message"));
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
+                .result("The message has been displayed to the user.")
                 .output(input.get("message"))
-                .message(input.get("message"))
+                .summary("")
                 .build();
     }
 }

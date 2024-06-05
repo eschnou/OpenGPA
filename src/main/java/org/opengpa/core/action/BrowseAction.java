@@ -62,9 +62,9 @@ public class BrowseAction implements Action {
 
         return ActionResult
                 .builder()
-                .message(String.format("I have fetched the content at %s", url))
+                .summary(String.format("Reading content at %s", url))
                 .status(ActionResult.Status.SUCCESS)
-                .output(trimContent(content))
+                .result(trimContent(content))
                 .build();
     }
 
@@ -73,7 +73,7 @@ public class BrowseAction implements Action {
         return ActionResult
                 .builder()
                 .status(ActionResult.Status.FAILURE)
-                .message(String.format("Browsing the web for url %s failed.", url))
+                .summary(String.format("Browsing the web for url %s failed.", url))
                 .error(message).build();
     }
 

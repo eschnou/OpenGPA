@@ -57,13 +57,13 @@ public class WebSearchAction implements Action {
             List<SearchResult> searchResults = getSearchResults(query);
             return ActionResult.builder()
                     .status(ActionResult.Status.SUCCESS)
-                    .output(formatResult(searchResults))
-                    .message(String.format("Searching for \"%s\" returned multiple results.", query))
+                    .result(formatResult(searchResults))
+                    .summary(String.format("Searching for \"%s\" returned multiple results.", query))
                     .build();
         } catch (Exception e) {
             return ActionResult.builder()
                     .status(ActionResult.Status.FAILURE)
-                    .message("The web search did not return any results.")
+                    .summary("The web search did not return any results.")
                     .error(e.getMessage())
                     .build();
         }

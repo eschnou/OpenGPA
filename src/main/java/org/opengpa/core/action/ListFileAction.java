@@ -54,8 +54,8 @@ public class ListFileAction implements Action {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .output(formatResult(list))
-                .message(String.format("Listing %d files in the workspace.", list.size()))
+                .result(formatResult(list))
+                .summary(String.format("Listing %d files in the workspace.", list.size()))
                 .build();
     }
 

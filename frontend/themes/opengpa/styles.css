@@ -1,118 +1,121 @@
 :host {
-  display: block;
-  height: 100%;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
 }
 
 .sidebar {
-  background-color: #f0f0f0;
-  padding: 0;
-  border-right: 1px solid #ddd;
+    background-color: #f0f0f0;
+    padding: 0;
+    border-right: 1px solid #ddd;
 }
 
 .sidebar-buttons {
-  margin-bottom: 10px;
-  justify-content: space-between;
+    margin-bottom: 10px;
+    justify-content: space-between;
 }
 
 .icon-button {
-  background: none;
-  border: none;
-  color: #333;
-  cursor: pointer;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
 }
 
 .conversation-history {
-  overflow-y: auto;
-  height: calc(100% - 50px); /* Adjust based on header size */
-  gap: 10px;
+    overflow-y: auto;
+    height: calc(100% - 50px); /* Adjust based on header size */
+    gap: 10px;
 }
 
 .chat-wrapper {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  padding: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
 }
 
 .chat-area {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: #fff;
-  padding: 0;
-  max-width: 700px;
-  width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #fff;
+    padding: 0;
+    max-width: 700px;
+    width: 100%;
 }
 
 .chat-messages {
-  overflow-y: auto;
-  flex-grow: 1;
-  padding-bottom: 10px; /* To avoid overlap with the input area */
-  gap: 0;
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-bottom: 10px; /* To avoid overlap with the input area */
+    gap: 0;
 }
 
 .user-input-area {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #f1f1f1; /* Grey background */
-  border-radius: 15px; /* Rounded border */
-  margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f1f1f1; /* Grey background */
+    border-radius: 15px; /* Rounded border */
+    margin-bottom: 20px;
 }
 
 .user-input {
-  background-color: #f1f1f1; /* Same background color as userInputArea */
-  border-radius: 15px;
-  --vaadin-input-field-background: #f1f1f1;
-  --vaadin-input-field-height: 36px;
+    background-color: #f1f1f1; /* Same background color as userInputArea */
+    border-radius: 15px;
+    --vaadin-input-field-background: #f1f1f1;
+    --vaadin-input-field-height: 36px;
 }
 
 .send-button {
-  background-color: black;
-  color: white;
-  margin-left: 10px;
-  border-radius: 15px;
+    background-color: black;
+    color: white;
+    margin-left: 10px;
+    border-radius: 15px;
 }
 
 .send-button:hover {
-  background-color: #333; /* Lighter color on hover */
-  cursor: pointer; /* Change cursor to hand */
+    background-color: #333; /* Lighter color on hover */
+    cursor: pointer; /* Change cursor to hand */
 }
 
 .task-item {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
-  color: #555;
-  padding: 10px;
-  text-decoration: none;
-  border-radius: 5px;
-  background-color: #e0e0e0;
-  border: none;
-  cursor: pointer;
-  text-align: left; /* Align text to the left */
-  text-overflow: ellipsis;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    color: #555;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    border: none;
+    cursor: pointer;
+    text-align: left; /* Align text to the left */
+    text-overflow: ellipsis;
 }
 
 .task-item:hover {
-  background-color: #c0c0c0;
-  cursor: pointer;
+    background-color: #c0c0c0;
+    cursor: pointer;
 }
 
 .user-message {
-  max-width: 70%;
-  margin-left: auto;
-  margin-right: 0;
-  background-color: floralwhite;
-  padding: 10px;
-  border-radius: 15px;
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: 0;
+    background-color: floralwhite;
+    padding: 10px;
+    border-radius: 15px;
 }
 
-.bot-message {
-
+.bot-action {
+    background-color: aliceblue;
+    padding: 10px;
+    border-radius: 15px;
+    font-size: small;
 }

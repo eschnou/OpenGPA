@@ -50,13 +50,13 @@ public class ReadFileAction implements Action {
             byte[] artifactContent = workspace.getDocumentContent(agent.getId(), document.get().getDocumentId());
             return ActionResult.builder()
                     .status(ActionResult.Status.SUCCESS)
-                    .output(new String(artifactContent))
-                    .message(String.format("Successfully read file %s from the agent workspace.", document.get().getName()))
+                    .result(new String(artifactContent))
+                    .summary(String.format("Successfully read file %s from the agent workspace.", document.get().getName()))
                     .build();
         } else {
             return ActionResult.builder()
                     .status(ActionResult.Status.FAILURE)
-                    .message(String.format("I could not find the file %s in the workspace.", request.get("filename")))
+                    .summary(String.format("I could not find the file %s in the workspace.", request.get("filename")))
                     .error("File not found.")
                     .build();
         }

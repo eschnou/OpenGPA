@@ -51,8 +51,8 @@ public class QueryLLMAction implements Action {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .output(response.getOutput().getContent())
-                .message("I have queried the LLM with prompt=" + formatPrompt(prompt))
+                .result(response.getOutput().getContent())
+                .summary("I have queried the LLM with prompt=" + formatPrompt(prompt))
                 .build();
     }
 

@@ -67,9 +67,9 @@ public class ScrapeAction implements Action {
 
         return ActionResult
                 .builder()
-                .message(String.format("I have fetched the content at %s", url))
+                .summary(String.format("Reading content at %s", url))
                 .status(ActionResult.Status.SUCCESS)
-                .output(trimContent(markdown))
+                .result(trimContent(markdown))
                 .build();
     }
 
@@ -78,7 +78,7 @@ public class ScrapeAction implements Action {
         return ActionResult
                 .builder()
                 .status(ActionResult.Status.FAILURE)
-                .message(String.format("Browsing the web for url %s failed.", url))
+                .summary(String.format("Browsing the web for url %s failed.", url))
                 .error(message).build();
     }
 

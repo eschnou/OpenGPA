@@ -42,6 +42,10 @@ public class Step {
 
   private String output;
 
+  private String reasoning;
+
+  private String action;
+
   @Builder.Default
   @JsonProperty("additional_output")
   private Map<String, String> additionalOutput = new HashMap<>();

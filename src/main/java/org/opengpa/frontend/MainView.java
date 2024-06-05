@@ -151,9 +151,7 @@ public class MainView extends VerticalLayout {
 
         Step step = taskService.nextStep(currentTask.getTaskId(), chatMessage, new HashMap<>());
         if (step != null) {
-            Paragraph botMessage = new Paragraph(step.getOutput());
-            botMessage.getElement().getClassList().add("bot-message");
-            chatMessages.add(botMessage);
+            renderStepOutput(step);
         }
     }
 
@@ -193,9 +191,20 @@ public class MainView extends VerticalLayout {
             chatMessages.add(userMessage);
         }
 
-        Paragraph botMessage = new Paragraph(step.getOutput());
-        botMessage.getElement().getClassList().add("bot-message");
-        chatMessages.add(botMessage);
+        renderStepOutput(step);
+    }
+
+    private void renderStepOutput(Step step) {
+        if (StringUtils.hasText(step.getAction())) {
+            Paragraph botMessage = new Paragraph(step.getAction());
+            botMessage.getElement().getClassList().add("bot-action");
+            chatMessages.add(botMessage);
+        }
+        if (StringUtils.hasText(step.getOutput())) {
+            Paragraph botMessage = new Paragraph(step.getOutput());
+            botMessage.getElement().getClassList().add("bot-message");
+            chatMessages.add(botMessage);
+        }
     }
 
     private String shortLabel(String input) {

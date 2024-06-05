@@ -1,11 +1,15 @@
 package org.opengpa.frontend;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.page.TargetElement;
 import com.vaadin.flow.server.AppShellSettings;
+import com.vaadin.flow.shared.communication.PushMode;
+import com.vaadin.flow.shared.ui.Transport;
 import com.vaadin.flow.theme.Theme;
 
 @Theme("opengpa")
+@Push()
 public class AppShell implements AppShellConfigurator {
 
     @Override

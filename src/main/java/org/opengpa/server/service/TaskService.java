@@ -11,7 +11,10 @@ import org.opengpa.server.exceptions.TaskNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.ChatClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,6 +46,11 @@ public class TaskService {
                 .additionalInput(additionalInputs)
                 .taskId(agent.getId())
                 .build();
+    }
+
+    @Async
+    public ListenableFuture<Step> asyncNextStep(String task, String userInput, Map<String, String> additionalInputs) {
+        return AsyncResult.forValue(nextStep(task, userInput, additionalInputs));
     }
 
     public Step nextStep(String taskId, String userInput, Map<String, String> context) {

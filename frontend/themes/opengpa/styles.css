@@ -18,6 +18,14 @@
     justify-content: space-between;
 }
 
+.project-logo {
+    margin-left: auto;
+    max-width: 100px;
+    width: 100%;
+    margin-right: auto;
+    padding-bottom: 5px;
+}
+
 .icon-button {
     background: none;
     border: none;
@@ -154,4 +162,17 @@
 
 .output-message .message-summary {
     padding: 10px
+}
+
+.continue-button {
+    color: darkslategray;
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.continue-button:hover {
+    background-color: #gray; /* Lighter color on hover */
+    cursor: pointer; /* Change cursor to hand */
 }

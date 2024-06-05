@@ -1,16 +1,11 @@
 package org.opengpa.frontend;
 
-import com.vaadin.flow.theme.Theme;
-import com.vaadin.flow.theme.lumo.Lumo;
-import jdk.jfr.Threshold;
+import org.opengpa.frontend.components.AgentMessage;
 import org.opengpa.server.dto.Step;
 import org.opengpa.server.dto.Task;
 import org.opengpa.server.service.TaskService;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.charts.model.Label;
-import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -196,14 +191,10 @@ public class MainView extends VerticalLayout {
 
     private void renderStepOutput(Step step) {
         if (StringUtils.hasText(step.getAction())) {
-            Paragraph botMessage = new Paragraph(step.getAction());
-            botMessage.getElement().getClassList().add("bot-action");
-            chatMessages.add(botMessage);
+            chatMessages.add(new AgentMessage(step.getAction(), step.getReasoning(), AgentMessage.Type.ACTION));
         }
         if (StringUtils.hasText(step.getOutput())) {
-            Paragraph botMessage = new Paragraph(step.getOutput());
-            botMessage.getElement().getClassList().add("bot-message");
-            chatMessages.add(botMessage);
+            chatMessages.add(new AgentMessage(step.getOutput(), step.getReasoning(), AgentMessage.Type.OUTPUT));
         }
     }
 

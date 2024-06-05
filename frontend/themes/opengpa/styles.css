@@ -113,9 +113,45 @@
     border-radius: 15px;
 }
 
-.bot-action {
-    background-color: aliceblue;
+.message-container {
+    position: relative;
+    padding: 0px;
+    margin-bottom: 10px;
+}
+
+.message-summary {
+
+}
+
+.message-details {
+    background: lightgoldenrodyellow;
     padding: 10px;
+    margin-top: 10px;
+    margin-left: 40px;
     border-radius: 15px;
-    font-size: small;
+}
+
+.message-details-button {
+    position: absolute;
+    color: lightgray;
+    top: 0px;
+    left: -30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none;
+}
+
+.message-container:hover .message-details-button {
+    display: block;
+}
+
+.action-message .message-summary {
+    background-color: aliceblue;
+    border-radius: 15px;
+    padding: 10px
+}
+
+.output-message .message-summary {
+    padding: 10px
 }

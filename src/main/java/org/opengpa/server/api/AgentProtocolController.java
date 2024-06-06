@@ -6,6 +6,7 @@ import org.opengpa.server.service.ArtifactService;
 import lombok.extern.slf4j.Slf4j;
 import org.opengpa.server.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @Controller
 @Slf4j
 @RequestMapping("${openapi.agentProtocol.base-path:}")
+@ConditionalOnProperty(prefix="opengpa.api", name="enabled", havingValue = "true", matchIfMissing = false)
 public class AgentProtocolController implements AgentProtocolApi {
 
     private final TaskService taskService;

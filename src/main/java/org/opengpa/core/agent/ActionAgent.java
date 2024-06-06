@@ -20,6 +20,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.stringtemplate.v4.ST;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +53,10 @@ public class ActionAgent implements Agent {
     private final Date startTime;
 
     private Map<String, String> context;
+
+    private boolean logInteractions = false;
+
+    private File logFolder;
 
     public ActionAgent(ChatClient chatClient, List<Action> availableActions, String task, Map<String, String> context) {
         this.chatClient = chatClient;
@@ -111,6 +119,7 @@ public class ActionAgent implements Agent {
         // Query the LLM (our 'brain') to decide on next action
         Generation response = chatClient.call(new Prompt(List.of(systemMessage, userMessage))).getResult();
         AgentOutput agentOutput = parseNextAction(outputParser, response);
+        logInteraction(systemMessage, userMessage, response.getOutput().getContent());
 
         // Execute the action requested by the LLM
         ActionResult result = executeAction(agentOutput);
@@ -129,6 +138,38 @@ public class ActionAgent implements Agent {
         return step;
     }
 
+    public void enableLogging(File logFolder) {
+        logInteractions = true;
+        this.logFolder = logFolder;
+    }
+
+    public void disableLogging() {
+        logInteractions = false;
+    }
+
+    private void logInteraction(Message systemMessage, Message userMessage, String content) {
+        if (!logInteractions) return;
+        try {
+            String agentId = getId();
+            int stepCount = executedSteps.size();
+            File agentDirectory = new File(logFolder + "/" + agentId);
+            if (!agentDirectory.exists()) {
+                agentDirectory.mkdirs();
+            }
+            File logFile = new File(agentDirectory, "log_" + stepCount + ".txt");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile))) {
+                writer.write("System Message: " + systemMessage.toString());
+                writer.write(System.lineSeparator());
+                writer.write("User Message: " + userMessage.toString());
+                writer.write(System.lineSeparator());
+                writer.write("Content: " + content);
+                writer.write(System.lineSeparator());
+            }
+        } catch (IOException e) {
+            log.error("Failed to create log file", e);
+        }
+    }
+
     private void updateContext(Map<String, String> context) {
         this.context = context;
         this.context.put("dayOfWeek", DayOfWeek.from(LocalDate.now()).name());
@@ -143,8 +184,8 @@ public class ActionAgent implements Agent {
 
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
         String content = response.getOutput().getContent();
-        if (response.getOutput().getContent().contains("```json")) {
-            Pattern pattern = Pattern.compile("```json(.*?)```", Pattern.DOTALL);
+        if (response.getOutput().getContent().startsWith("```")) {
+            Pattern pattern = Pattern.compile("```[a-z]*(.*?)```", Pattern.DOTALL);
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
                content = matcher.group(1).trim(); // Got the string between "```json" and "```"

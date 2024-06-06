@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="readfile", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix="opengpa.actions", name="files", havingValue = "true", matchIfMissing = false)
 public class ReadFileAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);

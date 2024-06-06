@@ -4,6 +4,7 @@ import org.opengpa.core.action.Action;
 import org.opengpa.core.agent.ActionAgent;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.model.AgentStep;
+import org.opengpa.server.config.ApplicationConfig;
 import org.opengpa.server.dto.Artifact;
 import org.opengpa.server.dto.Step;
 import org.opengpa.server.dto.Task;
@@ -31,14 +32,21 @@ public class TaskService {
 
     private final List<Action> actions;
 
+    private final ApplicationConfig applicationConfig;
+
     @Autowired
-    public TaskService(ChatClient chatClient, List<Action> actions) {
+    public TaskService(ChatClient chatClient, List<Action> actions, ApplicationConfig applicationConfig) {
         this.chatClient = chatClient;
         this.actions = actions;
+        this.applicationConfig = applicationConfig;
     }
 
     public Task plan(String task, Map<String, String> additionalInputs) {
-        Agent agent = new ActionAgent(chatClient, actions, task, additionalInputs);
+        ActionAgent agent = new ActionAgent(chatClient, actions, task, additionalInputs);
+        if (applicationConfig.isLogPrompt()) {
+            agent.enableLogging(applicationConfig.getLogFolder());
+        }
+
         tasks.put(agent.getId(), agent);
 
         return Task.builder()

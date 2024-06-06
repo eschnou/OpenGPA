@@ -36,3 +36,6 @@ build/
 
 ### Java ###
 src/main/resources/application-local.properties
+
+### OpenGPA ###
+logs/

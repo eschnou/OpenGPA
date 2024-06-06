@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="writefile", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix="opengpa.actions", name="files", havingValue = "true", matchIfMissing = false)
 public class WriteFileAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(WriteFileAction.class);

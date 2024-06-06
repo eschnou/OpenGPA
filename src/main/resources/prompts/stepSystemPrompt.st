@@ -8,6 +8,9 @@ ask questions to the user by outputting a message with the question.
 Searching the web is expensive, you should first leverage your internal knowleged as much as possible
 and only proceed to web search if really needed and with a strong reason.
 
+To finalize the task, you MUST output your answer to the user with the outputMessage action and the content
+in the message argument.
+
 The task is happening in this context:
 {context}
 

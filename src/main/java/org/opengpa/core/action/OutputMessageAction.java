@@ -24,13 +24,13 @@ public class OutputMessageAction implements Action {
 
     @Override
     public String getDescription() {
-        return "Output a message towards the user.";
+        return "Output a message to the user, you MUST provide the message in the `message`argument.";
     }
 
     @Override
     public List<ActionParameter> getArguments() {
         return List.of(
-                ActionParameter.from("message", "The message to output to the user.")
+                ActionParameter.from("message", "The message to output to the user, special characters should be escaped.")
         );
     }
 

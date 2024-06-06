@@ -215,7 +215,7 @@ public class ActionAgent implements Agent {
     }
 
     private String renderPreviousSteps() {
-        String templateString = "<steps:{step | Action:<step.action.name>(<step.action.arguments>)\nStatus:<step.result.status>\nResult:<step.result.result>\nError:<step.result.error>\nUser feedback:<step.feedback>\n\n}>";
+        String templateString = "<steps:{step | Action:<step.action.name>(<step.action.arguments.keys:{k | <k>='<step.action.arguments.(k)>'}; separator=\",\">)\nStatus:<step.result.status>\nResult:<step.result.result>\nError:<step.result.error>\nUser feedback:<step.feedback>\n\n}>";
         ST template = new ST(templateString);
         template.add("steps", executedSteps);
         return template.render();

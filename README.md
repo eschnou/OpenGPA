@@ -64,7 +64,7 @@ Improve the Agentic capabilities:
 - Add support for **remote API invocation** to tap into existing enterprise APIs
 - Improve **web browsing** and **web interactions** (e.g. allowing the agent to submit forms)
 
-Make 0XEE enterprise ready:
+Make OpenGPA enterprise ready:
 - Persistence of tasks/steps
 - Proper file storage and management
 - User management and access control

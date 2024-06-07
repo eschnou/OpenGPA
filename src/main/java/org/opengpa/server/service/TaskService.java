@@ -10,7 +10,7 @@ import org.opengpa.server.dto.Step;
 import org.opengpa.server.dto.Task;
 import org.opengpa.server.exceptions.TaskNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -28,21 +28,21 @@ public class TaskService {
 
     private final HashMap<String, List<Step>> steps = new HashMap<>();
 
-    private final ChatClient chatClient;
+    private final ChatModel chatModel;
 
     private final List<Action> actions;
 
     private final ApplicationConfig applicationConfig;
 
     @Autowired
-    public TaskService(ChatClient chatClient, List<Action> actions, ApplicationConfig applicationConfig) {
-        this.chatClient = chatClient;
+    public TaskService(ChatModel chatModel, List<Action> actions, ApplicationConfig applicationConfig) {
+        this.chatModel = chatModel;
         this.actions = actions;
         this.applicationConfig = applicationConfig;
     }
 
     public Task plan(String task, Map<String, String> additionalInputs) {
-        ActionAgent agent = new ActionAgent(chatClient, actions, task, additionalInputs);
+        ActionAgent agent = new ActionAgent(chatModel, actions, task, additionalInputs);
         if (applicationConfig.isLogPrompt()) {
             agent.enableLogging(applicationConfig.getLogFolder());
         }

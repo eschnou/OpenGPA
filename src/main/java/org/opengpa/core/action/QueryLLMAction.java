@@ -5,8 +5,9 @@ import org.opengpa.core.model.ActionParameter;
 import org.opengpa.core.model.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.Generation;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -20,10 +21,10 @@ public class QueryLLMAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);
 
-    private final ChatClient chatClient;
+    private final ChatModel chatModel;
 
-    public QueryLLMAction(ChatClient chatClient) {
-        this.chatClient = chatClient;
+    public QueryLLMAction(ChatModel chatModel) {
+        this.chatModel = chatModel;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class QueryLLMAction implements Action {
         log.debug("Querying LLM with prompt={}", request.get("prompt"));
 
         String prompt = request.get("prompt");
-        Generation response = chatClient.call(new Prompt(prompt)).getResult();
+        Generation response = chatModel.call(new Prompt(prompt)).getResult();
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)

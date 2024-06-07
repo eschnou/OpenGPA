@@ -15,7 +15,7 @@
     <description>Open and extensible general purpose assistant.</description>
     <properties>
         <java.version>21</java.version>
-        <spring-ai.version>0.8.1</spring-ai.version>
+        <spring-ai.version>1.0.0.M1</spring-ai.version>
         <springdoc.version>1.6.14</springdoc.version>
         <vaadin.version>24.3.12</vaadin.version>
         <maven.compiler.source>21</maven.compiler.source>

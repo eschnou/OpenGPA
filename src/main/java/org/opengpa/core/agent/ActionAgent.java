@@ -9,9 +9,10 @@ import org.opengpa.core.model.AgentStep;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.ai.chat.ChatClient;
-import org.springframework.ai.chat.Generation;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
@@ -38,7 +39,7 @@ public class ActionAgent implements Agent {
 
     private final Resource stepUserPromptResource = new ClassPathResource("prompts/stepUserPrompt.st");
 
-    private final ChatClient chatClient;
+    private final ChatModel chatModel;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -58,8 +59,8 @@ public class ActionAgent implements Agent {
 
     private File logFolder;
 
-    public ActionAgent(ChatClient chatClient, List<Action> availableActions, String task, Map<String, String> context) {
-        this.chatClient = chatClient;
+    public ActionAgent(ChatModel chatModel, List<Action> availableActions, String task, Map<String, String> context) {
+        this.chatModel = chatModel;
         this.availableActions = availableActions;
         this.task = task;
         this.context = context;
@@ -117,7 +118,7 @@ public class ActionAgent implements Agent {
                         "history", renderPreviousSteps()));
 
         // Query the LLM (our 'brain') to decide on next action
-        Generation response = chatClient.call(new Prompt(List.of(systemMessage, userMessage))).getResult();
+        Generation response = chatModel.call(new Prompt(List.of(systemMessage, userMessage))).getResult();
         AgentOutput agentOutput = parseNextAction(outputParser, response);
         logInteraction(systemMessage, userMessage, response.getOutput().getContent());
 

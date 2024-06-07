@@ -173,6 +173,16 @@
 }
 
 .continue-button:hover {
-    background-color: #gray; /* Lighter color on hover */
+    background-color: #f3f3f3;; /* Lighter color on hover */
     cursor: pointer; /* Change cursor to hand */
+}
+
+.output-message .message-summary pre {
+    padding: 10px;
+    overflow-x: scroll;
+    background-color: #f3f3f3;
+}
+
+.output-message .message-summary code {
+    background-color: #f3f3f3;
 }

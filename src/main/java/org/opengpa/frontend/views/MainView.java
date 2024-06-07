@@ -1,14 +1,13 @@
-package org.opengpa.frontend;
+package org.opengpa.frontend.views;
 
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
-import com.vaadin.flow.server.VaadinService;
 import org.opengpa.frontend.components.AgentMessage;
+import org.opengpa.frontend.utils.MarkdownConverter;
 import org.opengpa.server.dto.Step;
 import org.opengpa.server.dto.Task;
 import org.opengpa.server.service.TaskService;
@@ -23,10 +22,10 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.Route;
 import org.springframework.util.StringUtils;
 import org.springframework.util.concurrent.ListenableFuture;
+import org.yaml.snakeyaml.error.Mark;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Route("")
 public class MainView extends VerticalLayout {
@@ -36,6 +35,8 @@ public class MainView extends VerticalLayout {
     public static final int MAX_LOOPS = 3;
 
     private final TaskService taskService;
+
+    private final MarkdownConverter markdownConverter;
 
     private Task currentTask;
 
@@ -51,8 +52,9 @@ public class MainView extends VerticalLayout {
 
     private int loopCounter = 0;
 
-    public MainView(TaskService taskService) {
+    public MainView(TaskService taskService, MarkdownConverter markdownConverter) {
         this.taskService = taskService;
+        this.markdownConverter = markdownConverter;
         initView();
         loadTaskHistory();
     }
@@ -245,7 +247,6 @@ public class MainView extends VerticalLayout {
         });
     }
 
-
     private void loadTaskHistory() {
         conversationHistory.removeAll();
         List<Task> tasks = taskService.getTasks().reversed();
@@ -282,7 +283,8 @@ public class MainView extends VerticalLayout {
             chatMessages.add(new AgentMessage(step.getAction(), step.getReasoning(), AgentMessage.Type.ACTION));
         }
         if (StringUtils.hasText(step.getOutput())) {
-            chatMessages.add(new AgentMessage(step.getOutput(), step.getReasoning(), AgentMessage.Type.OUTPUT));
+            String htmlContent = markdownConverter.convertToHtml(step.getOutput());
+            chatMessages.add(new AgentMessage(htmlContent, step.getReasoning(), AgentMessage.Type.OUTPUT));
         }
     }
 

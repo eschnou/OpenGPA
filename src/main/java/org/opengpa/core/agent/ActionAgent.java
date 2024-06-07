@@ -185,7 +185,7 @@ public class ActionAgent implements Agent {
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
         String content = response.getOutput().getContent();
         if (response.getOutput().getContent().startsWith("```")) {
-            Pattern pattern = Pattern.compile("```[a-z]*(.*?)```", Pattern.DOTALL);
+            Pattern pattern = Pattern.compile("```[a-z]*(.*)```", Pattern.DOTALL);
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
                content = matcher.group(1).trim(); // Got the string between "```json" and "```"

@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="outputmessage", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix="opengpa.actions", name="output_message", havingValue = "true", matchIfMissing = true)
 public class OutputMessageAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(OutputMessageAction.class);
 
     @Override
     public String getName() {
-        return "outputMessage";
+        return "output_message";
     }
 
     @Override
@@ -28,7 +28,7 @@ public class OutputMessageAction implements Action {
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
+    public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("message", "The message to output to the user, special characters should be escaped.")
         );

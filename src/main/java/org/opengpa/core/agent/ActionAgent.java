@@ -1,21 +1,26 @@
 package org.opengpa.core.agent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.agent.output.AgentOutput;
 import org.opengpa.core.model.ActionInvocation;
-import org.opengpa.core.model.ActionParameter;
 import org.opengpa.core.model.ActionResult;
 import org.opengpa.core.model.AgentStep;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.ai.parser.BeanOutputParser;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -25,6 +30,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -39,9 +45,11 @@ public class ActionAgent implements Agent {
 
     private final Resource stepUserPromptResource = new ClassPathResource("prompts/stepUserPrompt.st");
 
+    private final Resource toolsTemplateResource = new ClassPathResource("prompts/toolsTemplate.st");
+
     private final ChatModel chatModel;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final List<Action> availableActions;
 
@@ -105,8 +113,8 @@ public class ActionAgent implements Agent {
         // information such as the list of possible actions.
         PromptTemplate systemPrompt = new SystemPromptTemplate(stepSystemPromptResource);
         Message systemMessage = systemPrompt.createMessage(Map.of(
-                "context", renderContext(),
-                "actions", renderAvailableActions()));
+                "context", renderContext(context),
+                "actions", renderTools(availableActions)));
 
         // Prepare the user prompt. This one contains all user/task specific actions.
         var outputParser = new BeanOutputParser<>(AgentOutput.class);
@@ -115,10 +123,15 @@ public class ActionAgent implements Agent {
                 Map.of("task", task,
                         "instructions", userInput,
                         "format", outputParser.getFormat(),
-                        "history", renderPreviousSteps()));
+                        "history", renderPreviousSteps(executedSteps)));
+
+        // Prepare the final prompt and add model specific options
+        ChatOptions chatOptions = getOptions();
+        Prompt prompt = new Prompt(List.of(systemMessage, userMessage), chatOptions);
 
         // Query the LLM (our 'brain') to decide on next action
-        Generation response = chatModel.call(new Prompt(List.of(systemMessage, userMessage))).getResult();
+        Generation response = chatModel.call(prompt).getResult();
+
         AgentOutput agentOutput = parseNextAction(outputParser, response);
         logInteraction(systemMessage, userMessage, response.getOutput().getContent());
 
@@ -171,6 +184,16 @@ public class ActionAgent implements Agent {
         }
     }
 
+    private OllamaOptions getOptions() {
+        if (chatModel instanceof OllamaChatModel) {
+            OllamaOptions ollamaOptions = new OllamaOptions();
+            ollamaOptions.setFormat("json");
+            return ollamaOptions;
+        }
+
+        return null;
+    }
+
     private void updateContext(Map<String, String> context) {
         this.context = context;
         this.context.put("dayOfWeek", DayOfWeek.from(LocalDate.now()).name());
@@ -206,7 +229,7 @@ public class ActionAgent implements Agent {
         return AgentOutput.builder()
                 .action(ActionInvocation.builder()
                         .name("outputMessage")
-                        .arguments(Map.of(
+                        .parameters(Map.of(
                                 "message", content
                         ))
                         .build())
@@ -215,35 +238,34 @@ public class ActionAgent implements Agent {
                 .build();
     }
 
-    private String renderPreviousSteps() {
-        String templateString = "<steps:{step | Action:<step.action.name>(<step.action.arguments.keys:{k | <k>='<step.action.arguments.(k)>'}; separator=\",\">)\nStatus:<step.result.status>\nResult:<step.result.result>\nError:<step.result.error>\nUser feedback:<step.feedback>\n\n}>";
-        ST template = new ST(templateString);
-        template.add("steps", executedSteps);
-        return template.render();
-    }
-
-    private String renderAvailableActions() {
-        StringBuilder sb = new StringBuilder();
-        for (Action action : availableActions) {
-            sb.append("Name:" + action.getName() + "\n");
-            sb.append("Description:" + action.getDescription() + "\n");
-            sb.append("Inputs:\n" + renderArguments(action.getArguments()) + "\n");
+    @VisibleForTesting
+    String renderPreviousSteps(List<AgentStep> steps) {
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(steps);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to render steps", e);
+            return "[]";
         }
-        return sb.toString();
     }
 
-    private String renderArguments(List<ActionParameter> actionParameters) {
-        String templateString = "<arguments:{arg | - <arg.name> - (<arg.description>)\n}>";
-        ST template = new ST(templateString);
-        template.add("arguments", actionParameters);
-        return template.render();
+    @VisibleForTesting
+    String renderTools(List<Action> tools) {
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tools);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to render tools", e);
+            return "[]";
+        }
     }
 
-    private Object renderContext() {
-        String templateString = "<context.keys:{k | - <k> : <context.(k)> \n}>";
-        ST template = new ST(templateString);
-        template.add("context", context);
-        return template.render();
+    @VisibleForTesting
+    String renderContext(Map<String, String> context) {
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(context);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to render context", e);
+            return "{}";
+        }
     }
 
     private ActionResult executeAction(AgentOutput output) {
@@ -251,9 +273,13 @@ public class ActionAgent implements Agent {
             ActionInvocation action = output.getAction();
             Optional<Action> matchingAction = availableActions.stream().filter(a -> a.getName().equals(action.getName())).findFirst();
             if (matchingAction.isPresent()) {
-                return matchingAction.get().apply(this, action.getArguments());
+                return matchingAction.get().apply(this, action.getParameters());
             } else {
-                throw new IllegalArgumentException("No matching action found for name: " + action.getName());
+                return ActionResult.builder()
+                        .summary(String.format("Agent invoked a non existent action {}", action.getName()))
+                        .status(ActionResult.Status.FAILURE)
+                        .error(String.format("The action '{}' does not exist, use only action available to you.", action.getName()))
+                        .build();
             }
         }
 

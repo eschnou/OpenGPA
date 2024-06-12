@@ -39,7 +39,7 @@ public class ListFileAction implements Action {
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
+    public List<ActionParameter> getParameters() {
         return List.of(
         );
     }
@@ -54,16 +54,8 @@ public class ListFileAction implements Action {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .result(formatResult(list))
+                .result(list)
                 .summary(String.format("Listing %d files in the workspace.", list.size()))
                 .build();
-    }
-
-    private String formatResult(List<String> list) {
-        try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(list);
-        } catch (JsonProcessingException e) {
-            return "[]";
-        }
     }
 }

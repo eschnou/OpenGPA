@@ -6,6 +6,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.component.progressbar.ProgressBarVariant;
+import lombok.extern.slf4j.Slf4j;
 import org.opengpa.frontend.components.AgentMessage;
 import org.opengpa.frontend.utils.MarkdownConverter;
 import org.opengpa.server.dto.Step;
@@ -20,6 +21,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.router.Route;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.yaml.snakeyaml.error.Mark;
@@ -33,6 +36,8 @@ public class MainView extends VerticalLayout {
     public static final int HISTORY_LABEL_SIZE = 35;
 
     public static final int MAX_LOOPS = 3;
+
+    private static final Logger log = LoggerFactory.getLogger(MainView.class);
 
     private final TaskService taskService;
 
@@ -243,6 +248,7 @@ public class MainView extends VerticalLayout {
     private void onNextStepError(UI ui, String message) {
         ui.access(() -> {
             Notification.show("Execution error: " + message);
+            log.warn("Execution error: " + message);
             resetLoop();
         });
     }

@@ -3,7 +3,6 @@ package org.opengpa.core.action;
 import org.opengpa.core.model.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.model.ActionParameter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="websearch", havingValue = "true", matchIfMissing = true)
-public class WebSearchAction implements Action {
+@ConditionalOnProperty(prefix="opengpa.actions", name="search_web", havingValue = "true", matchIfMissing = true)
+public class SearchWebAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);
 
@@ -34,7 +33,7 @@ public class WebSearchAction implements Action {
 
     @Override
     public String getName() {
-        return "webSearch";
+        return "search_web";
     }
 
     @Override
@@ -43,7 +42,7 @@ public class WebSearchAction implements Action {
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
+    public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("query", "The query to pass to the web search engine.")
         );
@@ -53,11 +52,19 @@ public class WebSearchAction implements Action {
         log.debug("Searching web with query {}", request.get("query"));
 
         String query = request.get("query");
+        if (query == null || query.isEmpty()) {
+            return ActionResult.builder()
+                    .status(ActionResult.Status.FAILURE)
+                    .summary("The query parameter is missing or has an empty value.")
+                    .error("The query parameter is missing or has an empty value.")
+                    .build();
+        }
+
         try {
             List<SearchResult> searchResults = getSearchResults(query);
             return ActionResult.builder()
                     .status(ActionResult.Status.SUCCESS)
-                    .result(formatResult(searchResults))
+                    .result(searchResults)
                     .summary(String.format("Searching for \"%s\" returned multiple results.", query))
                     .build();
         } catch (Exception e) {
@@ -83,13 +90,5 @@ public class WebSearchAction implements Action {
         }
 
         return resultList.subList(0, resultList.size() > 5 ? 5 : resultList.size());
-    }
-
-    private String formatResult(List<SearchResult> list) {
-        try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(list);
-        } catch (JsonProcessingException e) {
-            return "[]";
-        }
     }
 }

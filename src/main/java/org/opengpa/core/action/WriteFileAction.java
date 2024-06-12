@@ -38,7 +38,7 @@ public class WriteFileAction implements Action {
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
+    public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("filename", "Relative path of the file to write in the agent workspace"),
                 ActionParameter.from("body", "Text content to write to the file. Binary is not supported.")

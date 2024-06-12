@@ -37,7 +37,7 @@ public class ReadFileAction implements Action {
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
+    public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("filename", "Relative path of the file to read in the agent workspace")
         );

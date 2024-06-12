@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="queryllm", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix="opengpa.actions", name="query_llm", havingValue = "true", matchIfMissing = false)
 public class QueryLLMAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);
@@ -38,7 +38,7 @@ public class QueryLLMAction implements Action {
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
+    public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("prompt", "The prompt to submit to the large language model.")
         );

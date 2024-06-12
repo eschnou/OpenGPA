@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="fetchurl", havingValue = "true", matchIfMissing = true)
-public class BrowseAction implements Action {
+@ConditionalOnProperty(prefix="opengpa.actions", name="browse_web", havingValue = "true", matchIfMissing = false)
+public class BrowseWebAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);
 
@@ -23,29 +23,36 @@ public class BrowseAction implements Action {
 
     private final WebClient webClient;
 
-    public BrowseAction(WebClient webClient) {
+    public BrowseWebAction(WebClient webClient) {
         this.webClient = webClient;
     }
 
     @Override
     public String getName() {
-        return "fetchUrl";
+        return "browse_web";
     }
 
     @Override
     public String getDescription() {
-        return "Fetch the content at a given url.";
+        return "Fetch the raw html content at a given url.";
     }
 
     @Override
-    public List<ActionParameter> getArguments() {
-        return List.of(ActionParameter.from("url", "The url of the content to fetch."));
+    public List<ActionParameter> getParameters() {
+        return List.of(ActionParameter.from("url", "The url of the page to load."));
     }
 
     public ActionResult apply(Agent agent, Map<String, String> request) {
         log.debug("Fetching url {} for agent {}", request.get("url"), agent.getId());
 
         String url = request.get("url");
+        if (url == null || url.isEmpty()) {
+            return ActionResult.builder()
+                    .status(ActionResult.Status.FAILURE)
+                    .summary("The url parameter is missing or has an empty value.")
+                    .error("The url parameter is missing or has an empty value.")
+                    .build();
+        }
 
         String content;
         try {
@@ -64,17 +71,15 @@ public class BrowseAction implements Action {
                 .builder()
                 .summary(String.format("Reading content at %s", url))
                 .status(ActionResult.Status.SUCCESS)
-                .result(trimContent(content))
+                .result(formatResult(url, content))
                 .build();
     }
 
-    private static ActionResult handleWebFetchError(Agent agent, String url, String message) {
-        log.error("Failed to fetch url {} for agent {} - {}", url, agent.getId(), message);
-        return ActionResult
-                .builder()
-                .status(ActionResult.Status.FAILURE)
-                .summary(String.format("Browsing the web for url %s failed.", url))
-                .error(message).build();
+    protected Map<String, String> formatResult(String url, String content) {
+        return Map.of(
+                "url", url,
+                "content", trimContent(content)
+        );
     }
 
     private String trimContent(String content) {
@@ -82,5 +87,14 @@ public class BrowseAction implements Action {
         if (content.length() < MAX_CONTENT_SIZE) return content;
         return content.substring(0, MAX_CONTENT_SIZE);
 
+    }
+
+    private ActionResult handleWebFetchError(Agent agent, String url, String message) {
+        log.error("Failed to fetch url {} for agent {} - {}", url, agent.getId(), message);
+        return ActionResult
+                .builder()
+                .status(ActionResult.Status.FAILURE)
+                .summary(String.format("Browsing the web for url %s failed.", url))
+                .error(message).build();
     }
 }

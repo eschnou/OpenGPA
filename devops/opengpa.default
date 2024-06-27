@@ -1,0 +1,21 @@
+OPENGPA_UI_NAME="OpenGPA"
+
+# OpenAI API Key
+OPENAI_API_KEY=sk-***
+
+# Single in-memory user
+OPENGPA_SERVER_AUTH_PROVIDER=memory
+OPENGPA_SERVER_USERNAME=opengpa
+OPENGPA_SERVER_PASSWORD=secret
+
+# Use a file for user accounts, you can find a sample file in /devops
+# OPENGPA_SERVER_AUTH_PROVIDER=file
+# OPENGPA_SERVER_AUTH_FILE=/etc/opengpa/users.conf
+
+# Log all prompts for easier debugging
+# OPENGPA_SERVER_LOGPROMPT=true
+# OPENGPA_SERVER_LOGFOLDER=/home/ubuntu/OpenGPA/logs
+
+# The following is required if OpenGPA is behind a proxy/alb serving https
+SERVER_FORWARDHEADERSSTRATEGY=native
+

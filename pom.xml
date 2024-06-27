@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa</artifactId>
+    <version>0.1.0</version>
+
+    <packaging>pom</packaging>
+
+    <name>opengpa</name>
+    <description>Open and extensible general purpose assistant.</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring-ai.version>1.0.0.M1</spring-ai.version>
+        <springboot.version>3.2.6</springboot.version>
+        <springdoc.version>1.6.14</springdoc.version>
+        <vaadin.version>24.3.12</vaadin.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>opengpa-core</module>
+        <module>opengpa-server</module>
+        <module>opengpa-actions</module>
+    </modules>
+
+    <scm>
+        <url>https://github.com/eschnou/opengpa</url>
+        <connection>git://github.com/eschnou/opengpa.git</connection>
+        <developerConnection>git@github.com:eschnou/opengpa.git</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>Github Issues</system>
+        <url>https://github.com/eschnou/opengpa/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>Github Actions</system>
+        <url>https://github.com/eschnou/opengpa/actions</url>
+    </ciManagement>
+
+    <developers>
+        <developer>
+            <id>eschnou</id>
+            <name>Laurent Eschenauer</name>
+            <email>laurent at eschenauer.be</email>
+            <roles>
+                <role>lead</role>
+            </roles>
+        </developer>
+    </developers>
+
+</project>

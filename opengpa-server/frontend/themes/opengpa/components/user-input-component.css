@@ -1,0 +1,61 @@
+.user-input-component {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--lumo-shade-10pct);
+    margin-bottom: 20px;
+}
+
+.user-input {
+    background-color: transparent;
+    --vaadin-input-field-background: transparent;
+    --vaadin-input-field-placeholder-color: var(--lumo-shade-50pct);
+    --vaadin-input-field-height: 36px;
+}
+
+.send-button {
+    background-color: transparent;
+    font-size: 35px;
+    margin-left: 10px;
+}
+
+.send-button:hover {
+    cursor: pointer; /* Change cursor to hand */
+}
+
+.upload-button {
+    background: none;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.file-component {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.remove-button {
+    visibility: hidden;
+    font-size: 15px;
+    color: red;
+    background: none;
+    border: none;
+    position: absolute;
+    left: -3px;
+    top: -2px;
+}
+
+.remove-button:hover {
+    cursor: pointer;
+}
+
+.file-component:hover .remove-button {
+    visibility: visible;
+}
+

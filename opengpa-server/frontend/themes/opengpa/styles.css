@@ -1,0 +1,160 @@
+@import "components/step-component.css";
+@import "components/user-input-component.css";
+@import "actions/search-action.css";
+@import "actions/tts-action.css";
+
+html {
+    --lumo-line-height-m: 1.4;
+    --lumo-line-height-s: 1.2;
+    --lumo-line-height-xs: 1.1;
+    --lumo-border-radius: 0.125em;
+    --lumo-primary-text-color: hsl(121, 74%, 16%);
+    --lumo-primary-color-50pct: rgba(15, 118, 16, 0.5);
+    --lumo-primary-color-10pct: rgba(15, 118, 16, 0.1);
+    --lumo-primary-color-30pct: rgba(15, 118, 16, 0.3);
+    --lumo-primary-color: hsl(121, 78%, 26%);
+    --lumo-shade-5pct: rgba(0, 0, 0, 0.05);
+    --lumo-shade-10pct: rgba(0, 0, 0, 0.1);
+    --lumo-shade-20pct: rgba(0, 0, 0, 0.2);
+    --lumo-shade-30pct: rgba(0, 0, 0, 0.3);
+    --lumo-shade-40pct: rgba(0, 0, 0, 0.4);
+    --lumo-shade-50pct: rgba(0, 0, 0, 0.5);
+    --lumo-shade-60pct: rgba(0, 0, 0, 0.6);
+    --lumo-shade-70pct: rgba(0, 0, 0, 0.7);
+    --lumo-shade-80pct: rgba(0, 0, 0, 0.8);
+    --lumo-shade-90pct: rgba(0, 0, 0, 0.9);
+    --lumo-shade: hsl(123, 0%, 0%);
+    --lumo-tint-5pct: rgba(250, 255, 245, 0.05);
+    --lumo-tint-10pct: rgba(250, 255, 245, 0.1);
+    --lumo-tint-20pct: rgba(250, 255, 245, 0.2);
+    --lumo-tint-30pct: rgba(250, 255, 245, 0.3);
+    --lumo-tint-40pct: rgba(250, 255, 245, 0.4);
+    --lumo-tint-50pct: rgba(250, 255, 245, 0.5);
+    --lumo-tint-60pct: rgba(250, 255, 245, 0.6);
+    --lumo-tint-70pct: rgba(250, 255, 245, 0.7);
+    --lumo-tint-80pct: rgba(250, 255, 245, 0.8);
+    --lumo-tint-90pct: rgba(250, 255, 245, 0.9);
+    --lumo-tint: #fafff5;
+    --lumo-error-text-color: rgb(164, 56, 50);
+    --lumo-error-color-50pct: rgba(225, 78, 71, 0.5);
+    --lumo-error-color-10pct: rgba(225, 78, 71, 0.1);
+    --lumo-error-color: hsl(3, 72%, 58%);
+}
+
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.sidebar {
+    background-color: var(--lumo-shade-10pct);
+    padding: 0;
+}
+
+.sidebar-buttons {
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.project-logo {
+    margin-left: auto;
+    max-width: 100px;
+    width: 100%;
+    margin-right: auto;
+    padding-bottom: 5px;
+}
+
+.project-logo:hover {
+    cursor: pointer;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    color: var(--lumo-shade);
+    cursor: pointer;
+}
+
+.conversation-history {
+    overflow-y: auto;
+    height: calc(100% - 50px); /* Adjust based on header size */
+    gap: 10px;
+}
+
+.chat-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+}
+
+.chat-area {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--lumo-tint-10pct);
+    padding: 0;
+    max-width: 700px;
+    width: 100%;
+}
+
+.chat-messages {
+    overflow-y: auto;
+    flex-grow: 1;
+    padding-bottom: 10px; /* To avoid overlap with the input area */
+    gap: 0;
+}
+
+.task-item {
+    color: var(--lumo-shade);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    text-align: left; /* Align text to the left */
+    text-overflow: ellipsis;
+}
+
+.task-item:hover {
+    cursor: pointer;
+}
+
+.user-message {
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: 0;
+    background-color: var(--lumo-primary-color-10pct);
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.continue-button {
+    padding: 10px;
+    border-radius: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.continue-button:hover {
+    cursor: pointer; /* Change cursor to hand */
+}
+
+.panel-title {
+    margin-top: auto;
+    margin-bottom: auto;
+    color: var(--lumo-primary-color);
+    font-weight: 500;
+}
+
+.message-links {
+    padding-left: 15px;
+}

@@ -1,0 +1,11 @@
+.search-result-container {
+    gap: unset;
+}
+
+.search-summary {
+    margin-bottom: 10px;
+}
+
+.search-result {
+    padding-left: 10px;
+}

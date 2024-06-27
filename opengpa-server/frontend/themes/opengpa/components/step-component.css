@@ -1,0 +1,53 @@
+.step-component {
+    position: relative;
+    padding: 0px;
+    margin-bottom: 10px;
+}
+
+.step-action {
+    width: 100%;
+    background-color: var(--lumo-shade-5pct);
+    border-radius: 15px;
+    padding: 10px
+}
+
+.step-output {
+    padding: 10px
+}
+
+.step-links {
+    padding-left: 10px;
+}
+
+.step-output pre {
+    padding: 10px;
+    overflow-x: scroll;
+    background-color: #f3f3f3;
+}
+
+.step-output code {
+    background-color: #f3f3f3
+}
+
+.step-reasoning {
+    background: var(--lumo-shade-20pct);
+    padding: 10px;
+    margin-top: 10px;
+    margin-left: 40px;
+    border-radius: 15px;
+}
+
+.step-details-button {
+    position: absolute;
+    color: lightgray;
+    top: 0px;
+    left: -30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: none;
+}
+
+.step-component:hover .step-details-button {
+    display: block;
+}

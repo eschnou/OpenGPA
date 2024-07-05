@@ -12,7 +12,7 @@ Running OpenGPA against an external LLM provider (e.g. openai) doesn't require m
 will be sufficient. For running a fully off-line setup using a local LLM, view the [offline](offline.md) documentation.
 
 ### Operating system
-By default, OpenGPA is using [Playwright](https://playwright.dev/) for web browsing. Playwright currently only supports
+By default, OpenGPA is using [Playwright](https://playwright.dev/) for web browsing. Playwright on Linux currently only supports
 *Debian* and *Ubuntu* distributions. If you want to install on a RedHat based system, you will have to switch to using
 the simple markdown based web crawl.
 

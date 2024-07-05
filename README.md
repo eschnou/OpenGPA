@@ -77,12 +77,19 @@ Make OpenGPA enterprise ready:
 
 ### Build and run the server
 
-By default, opengpa is using a locally hosted LLama3 as its core LLM. Check the `application.properties` file 
+If you are on a Mac, the following should be enough to get you started and running this
+locally. In case of trouble, please reach out on [Discord](https://discord.gg/3XPsmCRNE2). 
+
+> [!WARNING]
+> Building requires __Java 21__. If you are on a Mac, you can easily install it
+> with `brew install openjdk@21`
+
+By default, opengpa is using OpenAI gpt-4o as its LLM. Check the `application.properties` file 
 for configuration options and the spring-ai documentation to configure support for other LLMs.
 
 ```bash
 mvn clean package -Pproduction
-OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.1-SNAPSHOT.jar
+OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.1.0.jar
 ```
 
 Open the UI on [http://localhost:8000](http://localhost:8000) and login with username `opengpa` and password `opengpa`.

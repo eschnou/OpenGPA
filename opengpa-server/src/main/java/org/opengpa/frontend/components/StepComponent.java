@@ -30,11 +30,7 @@ public class StepComponent extends VerticalLayout {
         Component reasoningComponent = reasoningComponent(step);
         Component linksComponent = getLinksComponent(step);
 
-        Button expandButton = new Button(new Icon(VaadinIcon.LIGHTBULB));
-        expandButton.addClassName("step-details-button");
-        expandButton.addClickListener(e -> reasoningComponent.setVisible(!reasoningComponent.isVisible()));
-
-        add(actionContainer, outputComponent, reasoningComponent, linksComponent, expandButton);
+        add(reasoningComponent, actionContainer, outputComponent, linksComponent);
         expand(actionContainer);
     }
 
@@ -54,9 +50,8 @@ public class StepComponent extends VerticalLayout {
 
     private @NotNull Component reasoningComponent(AgentStep step) {
         var component = new Div();
-        component.setText("Reasoning: " + step.getReasoning());
+        component.setText(step.getReasoning());
         component.addClassName("step-reasoning");
-        component.setVisible(false);
         return component;
     }
 

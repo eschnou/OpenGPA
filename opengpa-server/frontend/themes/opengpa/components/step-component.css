@@ -33,21 +33,5 @@
     background: var(--lumo-shade-20pct);
     padding: 10px;
     margin-top: 10px;
-    margin-left: 40px;
     border-radius: 15px;
-}
-
-.step-details-button {
-    position: absolute;
-    color: lightgray;
-    top: 0px;
-    left: -30px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: none;
-}
-
-.step-component:hover .step-details-button {
-    display: block;
 }

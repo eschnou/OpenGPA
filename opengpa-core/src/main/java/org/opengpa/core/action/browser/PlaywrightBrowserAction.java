@@ -39,6 +39,7 @@ public class PlaywrightBrowserAction implements Action {
             Content:
             
             """;
+    public static final String NAME = "browse_web";
 
     private final PlaywrightConfig playwrightConfig;
     private final Playwright playwright;
@@ -63,7 +64,7 @@ public class PlaywrightBrowserAction implements Action {
 
     @Override
     public String getName() {
-        return "browse_web";
+        return NAME;
     }
 
     @Override

@@ -159,3 +159,8 @@ html {
 .message-links {
     padding-left: 15px;
 }
+
+.chunk-details {
+    padding-bottom: 15px;
+    font-size: x-small;
+}

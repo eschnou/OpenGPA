@@ -43,7 +43,7 @@ import java.util.Optional;
 public class MainView extends VerticalLayout {
 
     public static final int HISTORY_LABEL_SIZE = 35;
-    public static final int MAX_LOOPS = 3;
+    public static final int MAX_LOOPS = 10;
 
     private static final Logger log = LoggerFactory.getLogger(MainView.class);
 

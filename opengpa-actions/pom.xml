@@ -67,6 +67,10 @@
             <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-core</artifactId>
             <version>${project.version}</version>

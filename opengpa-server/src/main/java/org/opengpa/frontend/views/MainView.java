@@ -267,7 +267,7 @@ public class MainView extends VerticalLayout {
         conversationHistory.removeAll();
         List<Task> tasks = taskService.getTasks(user.getName()).reversed();
         for (Task task : tasks) {
-            Button taskButton = new Button(shortLabel(task.getInput()));
+            Button taskButton = new Button(shortLabel(task.getTitle()));
             taskButton.addClassName("task-item");
             taskButton.setWidth("100%");
             taskButton.addClickListener(e -> onTaskClick(task.getTaskId()));

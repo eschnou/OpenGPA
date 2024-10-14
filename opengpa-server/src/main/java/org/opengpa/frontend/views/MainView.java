@@ -18,11 +18,12 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import org.jetbrains.annotations.NotNull;
+import org.opengpa.core.action.OutputMessageAction;
 import org.opengpa.core.agent.AgentStep;
 import org.opengpa.core.workspace.Workspace;
-import org.opengpa.frontend.components.UserInputComponent;
 import org.opengpa.frontend.components.HeaderComponent;
 import org.opengpa.frontend.components.StepComponent;
+import org.opengpa.frontend.components.UserInputComponent;
 import org.opengpa.frontend.renderer.ActionRendererService;
 import org.opengpa.server.model.Task;
 import org.opengpa.server.service.TaskService;
@@ -231,7 +232,7 @@ public class MainView extends VerticalLayout {
             ui.access(this::resetLoop);
         } else {
             // Not done and no output from the model, we check if max reached
-            if (!StringUtils.hasText(successResult.getResult().getOutput())) {
+            if (!successResult.getAction().getName().equals(OutputMessageAction.NAME)) {
                 if (loopCounter < MAX_LOOPS) {
                     executeNextStep(ui, "");
                     loopCounter++;
@@ -294,9 +295,11 @@ public class MainView extends VerticalLayout {
 
     private void renderStepOutput(AgentStep step) {
         StepComponent stepComponent = new StepComponent(step);
-        Optional<Component> actionComponent = actionRendererService.render(step.getAction(), step.getResult());
-        if (actionComponent.isPresent()) {
-            stepComponent.setActionComponent(actionComponent.get());
+        if (!step.getAction().getName().equals(OutputMessageAction.NAME)) {
+            Optional<Component> actionComponent = actionRendererService.render(step.getAction(), step.getResult());
+            if (actionComponent.isPresent()) {
+                stepComponent.setActionComponent(actionComponent.get());
+            }
         }
 
         chatMessages.add(stepComponent);

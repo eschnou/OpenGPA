@@ -65,6 +65,7 @@ public class ReActAgent implements Agent {
 
     private File logFolder;
 
+
     public ReActAgent(ChatModel chatModel, Workspace workspace, List<Action> availableActions, String task, Map<String, String> context) {
         this.chatModel = chatModel;
         this.workspace = workspace;
@@ -78,6 +79,11 @@ public class ReActAgent implements Agent {
     @Override
     public String getTask() {
         return task;
+    }
+
+    @Override
+    public List<AgentStep> getSteps() {
+        return executedSteps;
     }
 
     @Override
@@ -195,7 +201,7 @@ public class ReActAgent implements Agent {
     }
 
     private void updateContext(Map<String, String> context) {
-        this.context = context;
+        context.forEach((k, v) -> this.context.put(k, v));
         this.context.put("dayOfWeek", DayOfWeek.from(LocalDate.now()).name());
         this.context.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
         this.context.put("time", java.time.LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
@@ -249,9 +255,22 @@ public class ReActAgent implements Agent {
     }
 
     @VisibleForTesting
-    String renderTools(List<Action> tools) {
+    String renderTools(List<Action> actions) {
+        List<ActionDTO> actionsMap = new ArrayList<>();
+
+        for (Action action : actions) {
+            ActionDTO actionDTO = ActionDTO.builder()
+                    .name(action.getName())
+                    .description(action.getDescription())
+                    .parameters(action.getParameters())
+                    .data(action.getData(context))
+                    .build();
+
+            actionsMap.add(actionDTO);
+        }
+
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(tools);
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actionsMap);
         } catch (JsonProcessingException e) {
             log.warn("Failed to render tools", e);
             return "[]";
@@ -283,7 +302,7 @@ public class ReActAgent implements Agent {
             ActionInvocation action = output.getAction();
             Optional<Action> matchingAction = availableActions.stream().filter(a -> a.getName().equals(action.getName())).findFirst();
             if (matchingAction.isPresent()) {
-                return matchingAction.get().apply(this, action.getParameters());
+                return matchingAction.get().apply(this, action.getParameters(), context);
             } else {
                 return ActionResult.builder()
                         .summary(String.format("Agent invoked a non existent action {}", action.getName()))

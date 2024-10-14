@@ -41,3 +41,6 @@ src/main/resources/application-local.properties
 logs/
 application-local.properties
 opengpa-server/src/main/bundles/
+
+### Docker ###
+volumes/

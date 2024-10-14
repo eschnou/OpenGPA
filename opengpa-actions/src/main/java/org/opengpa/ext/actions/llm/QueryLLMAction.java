@@ -46,7 +46,7 @@ public class QueryLLMAction implements Action {
         );
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> request) {
+    public ActionResult apply(Agent agent, Map<String, String> request, Map<String, String> context) {
         log.debug("Querying LLM with prompt={}", request.get("prompt"));
 
         String prompt = request.get("prompt");

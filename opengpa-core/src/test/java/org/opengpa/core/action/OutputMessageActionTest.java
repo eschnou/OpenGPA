@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opengpa.core.agent.Agent;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,11 +51,10 @@ class OutputMessageActionTest {
         String testMessage = "Test message";
         input.put("message", testMessage);
 
-        ActionResult result = outputMessageAction.apply(mockAgent, input);
+        ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("The message has been displayed to the user.", result.getResult());
-        assertEquals(testMessage, result.getOutput());
         assertEquals("", result.getSummary());
     }
 
@@ -63,11 +63,10 @@ class OutputMessageActionTest {
         Map<String, String> input = new HashMap<>();
         input.put("message", "");
 
-        ActionResult result = outputMessageAction.apply(mockAgent, input);
+        ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("The message has been displayed to the user.", result.getResult());
-        assertEquals("", result.getOutput());
         assertEquals("", result.getSummary());
     }
 
@@ -76,11 +75,10 @@ class OutputMessageActionTest {
         Map<String, String> input = new HashMap<>();
         input.put("message", null);
 
-        ActionResult result = outputMessageAction.apply(mockAgent, input);
+        ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("The message has been displayed to the user.", result.getResult());
-        assertEquals("", result.getOutput());
         assertEquals("", result.getSummary());
     }
 }

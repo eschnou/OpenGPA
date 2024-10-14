@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.Map;
 
 @Component
-@ConditionalOnProperty(prefix="opengpa.actions", name="browse", havingValue = "markdown", matchIfMissing = true)
+@ConditionalOnProperty(prefix="opengpa.actions", name="browse", havingValue = "markdown", matchIfMissing = false)
 public class MarkdownBrowserAction extends RawBrowserAction {
 
     private static final Logger log = LoggerFactory.getLogger(MarkdownBrowserAction.class);

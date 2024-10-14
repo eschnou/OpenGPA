@@ -44,7 +44,8 @@ public class RawBrowserAction implements Action {
         return List.of(ActionParameter.from("url", "The url of the page to load."));
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> request) {
+    @Override
+    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Fetching url {} for agent {}", request.get("url"), agent.getId());
 
         String url = request.get("url");

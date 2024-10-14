@@ -17,6 +17,8 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +33,6 @@ public class PlaywrightBrowserAction implements Action {
             The following is a web page content. Using this content, try to answer the question below. If you cannot answer the question, explain
             what information is missing and do provide a short summary of what the page is about. If you find links that might contain
             further details, list the links and a brief explanation for each link.
-           
             
             Question: %s
             Page title: %s
@@ -79,7 +80,7 @@ public class PlaywrightBrowserAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input) {
+    public ActionResult apply(Agent agent, Map<String, String> input,  Map<String, String> context) {
         log.debug("Fetching url {} for agent {}", input.get("url"), agent.getId());
 
         String url = input.get("url");
@@ -119,7 +120,7 @@ public class PlaywrightBrowserAction implements Action {
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
                 .result(response.getOutput().getContent())
-                .summary(String.format("Processed page at %s", url))
+                .summary(String.format("Processed webpage '" +  title + "' from " + getHostFromUrl(url)))
                 .build();
     }
 
@@ -138,4 +139,13 @@ public class PlaywrightBrowserAction implements Action {
         String markdown = FlexmarkHtmlConverter.builder().build().convert(document.html());
         return markdown;
     }
+
+    private String getHostFromUrl(String urlString) {
+        try {
+            return new URL(urlString).getHost();
+        } catch (MalformedURLException e) {
+            return "";
+        }
+    }
+
 }

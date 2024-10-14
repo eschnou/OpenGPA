@@ -11,13 +11,14 @@
     </parent>
 
     <groupId>org.opengpa</groupId>
-    <artifactId>opengpa-actions</artifactId>
+    <artifactId>opengpa-rag</artifactId>
     <version>0.1-SNAPSHOT</version>
-    <name>opengpa actions</name>
-    <description>Additional actions for opengpa</description>
+    <name>opengpa rag</name>
+    <description>RAG implementation for OpenGPA</description>
 
     <properties>
         <java.version>21</java.version>
+        <spring-ai.version>1.0.0.M1</spring-ai.version>
         <springboot.version>3.2.10</springboot.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -53,6 +54,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>${spring-ai.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -67,10 +75,36 @@
             <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+
+        <!-- OpenGPA -->
+        <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Spring AI-->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-pgvector-store-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- PDF Processing -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.24</version>
+        </dependency>
+
+        <!-- Helpers -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

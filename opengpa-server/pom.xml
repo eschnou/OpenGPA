@@ -19,7 +19,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <springboot.version>3.2.6</springboot.version>
+        <springboot.version>3.2.10</springboot.version>
         <springdoc.version>1.6.14</springdoc.version>
         <vaadin.version>24.3.13</vaadin.version>
         <maven.compiler.source>21</maven.compiler.source>
@@ -68,6 +68,11 @@
         <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-actions</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opengpa</groupId>
+            <artifactId>opengpa-rag</artifactId>
             <version>${project.version}</version>
         </dependency>
 

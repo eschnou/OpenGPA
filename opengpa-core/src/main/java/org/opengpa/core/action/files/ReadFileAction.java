@@ -45,7 +45,8 @@ public class ReadFileAction implements Action {
         );
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> request) {
+    @Override
+    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Reading file {} for agent {}", request.get("filename"), agent.getId());
         Optional<Document> document = workspace.getDocument(agent.getId(), request.get("filename"));
         if (document.isPresent()) {

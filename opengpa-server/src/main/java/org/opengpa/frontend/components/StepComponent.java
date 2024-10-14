@@ -10,6 +10,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
+import org.opengpa.core.action.OutputMessageAction;
 import org.opengpa.core.agent.AgentStep;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.frontend.utils.MarkdownConverter;
@@ -43,10 +44,11 @@ public class StepComponent extends VerticalLayout {
     }
 
     private @NotNull Component outputComponent(AgentStep step) {
-        var htmlOutput = MarkdownConverter.getInstance().convertToHtml(step.getResult().getOutput());
+        String output = step.getResult().getResult().toString();
+        var htmlOutput = MarkdownConverter.getInstance().convertToHtml(StringUtils.hasText(output) ? output : "");
         var component = new Html("<div>" +  htmlOutput + "</div>");
         component.addClassName("step-output");
-        component.setVisible(StringUtils.hasText(step.getResult().getOutput()));
+        component.setVisible(step.getAction().getName().equals(OutputMessageAction.NAME));
         return component;
     }
 

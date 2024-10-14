@@ -38,10 +38,6 @@ public class ActionResult {
     // A user-friendly summary of the action, will be used to show to the user what the agent is doing
     private String summary;
 
-    // If the action result in a user output message, it should be here
-    @JsonIgnore
-    private String output;
-
     // A list of documents created in the workspace by this action
     @Builder.Default
     @JsonIgnore

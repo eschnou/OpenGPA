@@ -42,6 +42,8 @@ public class TaskService {
     }
 
     public Task plan(String username, String task, Map<String, String> additionalInputs) {
+        additionalInputs.put("username", username);
+
         ReActAgent agent = new ReActAgent(chatModel, workspace, actions, task, additionalInputs);
         if (applicationConfig.isLogPrompt()) {
             agent.enableLogging(applicationConfig.getLogFolder());

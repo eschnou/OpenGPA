@@ -2,6 +2,7 @@
 @import "components/user-input-component.css";
 @import "actions/search-action.css";
 @import "actions/tts-action.css";
+@import "views/document-view.css";
 
 html {
     --lumo-line-height-m: 1.4;
@@ -157,4 +158,9 @@ html {
 
 .message-links {
     padding-left: 15px;
+}
+
+.chunk-details {
+    padding-bottom: 15px;
+    font-size: x-small;
 }

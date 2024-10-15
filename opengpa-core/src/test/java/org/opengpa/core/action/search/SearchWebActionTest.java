@@ -12,6 +12,7 @@ import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ class SearchWebActionTest {
             }
         };
 
-        ActionResult result = searchWebAction.apply(agent, request);
+        ActionResult result = searchWebAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertTrue(result.getSummary().contains("Searched the web for \"test query\""));
@@ -90,7 +91,7 @@ class SearchWebActionTest {
         Map<String, String> request = new HashMap<>();
         request.put("query", "");
 
-        ActionResult result = searchWebAction.apply(agent, request);
+        ActionResult result = searchWebAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("The query parameter is missing or has an empty value.", result.getSummary());
@@ -101,7 +102,7 @@ class SearchWebActionTest {
     void testApplyWithMissingQuery() {
         Map<String, String> request = new HashMap<>();
 
-        ActionResult result = searchWebAction.apply(agent, request);
+        ActionResult result = searchWebAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("The query parameter is missing or has an empty value.", result.getSummary());
@@ -121,7 +122,7 @@ class SearchWebActionTest {
             }
         };
 
-        ActionResult result = searchWebAction.apply(agent, request);
+        ActionResult result = searchWebAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("The web search did not return any results.", result.getSummary());

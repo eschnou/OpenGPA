@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(prefix="opengpa.actions.tts", name="enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix="opengpa.actions.tts", name="enabled", havingValue = "true", matchIfMissing = false)
 public class TTSAction implements Action {
 
     public static final String ACTION_NAME = "text_to_speech";
@@ -56,7 +56,7 @@ public class TTSAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input) {
+    public ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context) {
         OpenAiAudioSpeechOptions speechOptions = OpenAiAudioSpeechOptions.builder()
                 .withModel("tts-1")
                 .withVoice(getVoiceFromInput(input.get("voice")))

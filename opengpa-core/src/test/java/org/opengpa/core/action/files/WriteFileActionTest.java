@@ -13,6 +13,7 @@ import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +72,7 @@ class WriteFileActionTest {
         when(agent.getId()).thenReturn(agentId);
         when(workspace.addDocument(eq(agentId), eq(filename), eq(fileContent.getBytes()), any())).thenReturn(mockDocument);
 
-        ActionResult result = writeFileAction.apply(agent, request);
+        ActionResult result = writeFileAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("The file test.txt has been written to the Agent workspace.", result.getSummary());
@@ -91,7 +92,7 @@ class WriteFileActionTest {
 
         when(agent.getId()).thenReturn(agentId);
 
-        ActionResult result = writeFileAction.apply(agent, request);
+        ActionResult result = writeFileAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         verify(workspace, never()).addDocument(anyString(), anyString(), any(), any());
@@ -107,7 +108,7 @@ class WriteFileActionTest {
 
         when(agent.getId()).thenReturn(agentId);
 
-        assertThrows(NullPointerException.class, () -> writeFileAction.apply(agent, request));
+        assertThrows(NullPointerException.class, () -> writeFileAction.apply(agent, request, Collections.emptyMap()));
 
         verify(workspace, never()).addDocument(anyString(), anyString(), any(), any());
     }
@@ -126,7 +127,7 @@ class WriteFileActionTest {
         when(agent.getId()).thenReturn(agentId);
         when(workspace.addDocument(eq(agentId), eq(filename), eq(fileContent.getBytes()), any())).thenReturn(mockDocument);
 
-        ActionResult result = writeFileAction.apply(agent, request);
+        ActionResult result = writeFileAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("The file test.txt has been written to the Agent workspace.", result.getSummary());

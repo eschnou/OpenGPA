@@ -3,18 +3,24 @@ package org.opengpa.core.action;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import org.opengpa.core.agent.Agent;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@JsonPropertyOrder({ "name", "description", "parameters"})
 public interface Action {
 
-    public String getName();
+    String getName();
 
-    public String getDescription();
+    String getDescription();
 
-    public List<ActionParameter> getParameters();
+    default List<ActionParameter> getParameters() {
+        return Collections.emptyList();
+    }
 
-    public ActionResult apply(Agent agent, Map<String, String> input);
+    default Map<String, Object> getData(Map<String, String> context) {
+        return Collections.emptyMap();
+    }
+
+    ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context);
 
 }

@@ -47,7 +47,8 @@ public class WriteFileAction implements Action {
         );
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> request) {
+    @Override
+    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Writing content to file {}", request.get("filename"));
 
         String filename = request.get("filename");

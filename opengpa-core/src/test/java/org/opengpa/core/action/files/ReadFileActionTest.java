@@ -11,10 +11,7 @@ import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -65,7 +62,7 @@ class ReadFileActionTest {
         when(workspace.getDocument(agentId, filename)).thenReturn(Optional.of(Document.builder().name(filename).metadata(Map.of("content-type","text/plain")).build()));
         when(workspace.getDocumentContent(agentId, filename)).thenReturn(fileContent.getBytes());
 
-        ActionResult result = readFileAction.apply(agent, request);
+        ActionResult result = readFileAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals(fileContent, result.getResult());
@@ -86,7 +83,7 @@ class ReadFileActionTest {
         when(agent.getId()).thenReturn(agentId);
         when(workspace.getDocument(agentId, filename)).thenReturn(Optional.empty());
 
-        ActionResult result = readFileAction.apply(agent, request);
+        ActionResult result = readFileAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertNull(result.getResult());
@@ -104,7 +101,7 @@ class ReadFileActionTest {
 
         when(agent.getId()).thenReturn(agentId);
 
-        ActionResult result = readFileAction.apply(agent, request);
+        ActionResult result = readFileAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertNull(result.getResult());

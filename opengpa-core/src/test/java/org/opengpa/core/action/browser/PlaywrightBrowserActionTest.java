@@ -19,6 +19,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,7 +109,7 @@ class PlaywrightBrowserActionTest {
         ChatResponse chatResponse = new ChatResponse(List.of(generation));
         when(chatModel.call(any(Prompt.class))).thenReturn(chatResponse);
 
-        ActionResult result = playwrightBrowserAction.apply(agent, input);
+        ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("Processed page at http://example.com", result.getSummary());
@@ -124,7 +125,7 @@ class PlaywrightBrowserActionTest {
         Map<String, String> input = new HashMap<>();
         input.put("query", "What is this page about?");
 
-        ActionResult result = playwrightBrowserAction.apply(agent, input);
+        ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("An error occurred while attempting to browse a site", result.getSummary());
@@ -137,7 +138,7 @@ class PlaywrightBrowserActionTest {
         input.put("url", "");
         input.put("query", "What is this page about?");
 
-        ActionResult result = playwrightBrowserAction.apply(agent, input);
+        ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("An error occurred while attempting to browse a site", result.getSummary());
@@ -155,7 +156,7 @@ class PlaywrightBrowserActionTest {
         when(browserContext.newPage()).thenReturn(page);
         when(page.navigate(eq(url), any(Page.NavigateOptions.class))).thenThrow(new PlaywrightException("Navigation failed"));
 
-        ActionResult result = playwrightBrowserAction.apply(agent, input);
+        ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("An error occured while attempting to browse http://example.com", result.getSummary());

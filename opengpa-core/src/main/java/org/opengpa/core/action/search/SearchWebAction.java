@@ -58,7 +58,8 @@ public class SearchWebAction implements Action {
         );
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> request) {
+    @Override
+    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Searching web with query {}", request.get("query"));
 
         String query = request.get("query");

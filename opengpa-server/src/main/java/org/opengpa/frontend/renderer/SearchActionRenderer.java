@@ -1,10 +1,14 @@
 package org.opengpa.frontend.renderer;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.AnchorTarget;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.shared.Tooltip;
 import com.vaadin.flow.component.shared.TooltipConfiguration;
@@ -31,23 +35,36 @@ public class SearchActionRenderer implements ActionRenderer{
         }
 
         VerticalLayout resultContainer = new VerticalLayout();
-        resultContainer.setClassName("search-result-container");
+        resultContainer.setPadding(false);
+        resultContainer.setClassName("action-result-container");
 
-        Div searchSummaryDiv = new Div(result.getSummary());
-        searchSummaryDiv.setClassName("search-summary");
-        resultContainer.add(searchSummaryDiv);
+        HorizontalLayout summaryContainer = new HorizontalLayout();
+        summaryContainer.setClassName("action-summary-container");
+        summaryContainer.setPadding(false);
+
+        Div resultSummary = new Div(result.getSummary());
+        resultSummary.setClassName("action-summary");
+
+        VerticalLayout resultDetails = new VerticalLayout();
+        resultDetails.setVisible(false);
 
         for (SearchResult searchResult : searchResults) {
             Anchor anchor = new Anchor(searchResult.url(), searchResult.title(), AnchorTarget.BLANK);
-            anchor.setClassName("search-result");
+            anchor.setClassName("action-result");
 
             Tooltip tooltip = Tooltip.forComponent(anchor);
             tooltip.setPosition(Tooltip.TooltipPosition.TOP_END);
             tooltip.setText(searchResult.snippet());
 
-            resultContainer.add(anchor);
+            resultDetails.add(anchor);
         }
 
+        Button expandButton = new Button(new Icon(VaadinIcon.ANGLE_DOUBLE_DOWN));
+        expandButton.addClassName("action-details-button");
+        expandButton.addClickListener(e -> resultDetails.setVisible(!resultDetails.isVisible()));
+
+        summaryContainer.add(resultSummary, expandButton);
+        resultContainer.add(summaryContainer, resultDetails);
         return Optional.of(resultContainer);
     }
 }

@@ -20,6 +20,7 @@ public class HeaderComponent extends HorizontalLayout {
         contextMenu.setOpenOnClick(true);
 
         contextMenu.addItem("Chat", e -> UI.getCurrent().getPage().setLocation("/"));
+        contextMenu.addItem("Documents", e -> UI.getCurrent().getPage().setLocation("/documents"));
 
         contextMenu.addItem("Log out", event -> {
             UI.getCurrent().getPage().setLocation("/login");

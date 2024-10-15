@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ class RawBrowserActionTest {
 
         when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.just(content));
 
-        ActionResult result = rawBrowserAction.apply(agent, request);
+        ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
         assertEquals("Reading content at http://example.com", result.getSummary());
@@ -90,7 +91,7 @@ class RawBrowserActionTest {
     void testApplyWithMissingUrl() {
         Map<String, String> request = new HashMap<>();
 
-        ActionResult result = rawBrowserAction.apply(agent, request);
+        ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("The url parameter is missing or has an empty value.", result.getSummary());
@@ -102,7 +103,7 @@ class RawBrowserActionTest {
         Map<String, String> request = new HashMap<>();
         request.put("url", "");
 
-        ActionResult result = rawBrowserAction.apply(agent, request);
+        ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("The url parameter is missing or has an empty value.", result.getSummary());
@@ -120,7 +121,7 @@ class RawBrowserActionTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.error(new WebClientResponseException(404, "Not Found", null, null, null)));
 
-        ActionResult result = rawBrowserAction.apply(agent, request);
+        ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("Browsing the web for url http://example.com failed.", result.getSummary());
@@ -138,7 +139,7 @@ class RawBrowserActionTest {
         when(requestHeadersUriSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.error(new RuntimeException("Unexpected error")));
 
-        ActionResult result = rawBrowserAction.apply(agent, request);
+        ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.FAILURE, result.getStatus());
         assertEquals("Browsing the web for url http://example.com failed.", result.getSummary());

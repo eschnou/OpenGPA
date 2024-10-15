@@ -10,6 +10,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import org.jetbrains.annotations.NotNull;
+import org.opengpa.core.action.OutputMessageAction;
 import org.opengpa.core.agent.AgentStep;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.frontend.utils.MarkdownConverter;
@@ -29,11 +30,7 @@ public class StepComponent extends VerticalLayout {
         Component reasoningComponent = reasoningComponent(step);
         Component linksComponent = getLinksComponent(step);
 
-        Button expandButton = new Button(new Icon(VaadinIcon.LIGHTBULB));
-        expandButton.addClassName("step-details-button");
-        expandButton.addClickListener(e -> reasoningComponent.setVisible(!reasoningComponent.isVisible()));
-
-        add(actionContainer, outputComponent, reasoningComponent, linksComponent, expandButton);
+        add(reasoningComponent, actionContainer, outputComponent, linksComponent);
         expand(actionContainer);
     }
 
@@ -43,18 +40,18 @@ public class StepComponent extends VerticalLayout {
     }
 
     private @NotNull Component outputComponent(AgentStep step) {
-        var htmlOutput = MarkdownConverter.getInstance().convertToHtml(step.getResult().getOutput());
+        String output = step.getResult().getResult().toString();
+        var htmlOutput = MarkdownConverter.getInstance().convertToHtml(StringUtils.hasText(output) ? output : "");
         var component = new Html("<div>" +  htmlOutput + "</div>");
         component.addClassName("step-output");
-        component.setVisible(StringUtils.hasText(step.getResult().getOutput()));
+        component.setVisible(step.getAction().getName().equals(OutputMessageAction.NAME));
         return component;
     }
 
     private @NotNull Component reasoningComponent(AgentStep step) {
         var component = new Div();
-        component.setText("Reasoning: " + step.getReasoning());
+        component.setText(step.getReasoning());
         component.addClassName("step-reasoning");
-        component.setVisible(false);
         return component;
     }
 

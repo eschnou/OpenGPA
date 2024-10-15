@@ -13,6 +13,7 @@ import java.util.Map;
 public class OutputMessageAction implements Action {
 
     private static final Logger log = LoggerFactory.getLogger(OutputMessageAction.class);
+    public static final String NAME = "output_message";
 
     public OutputMessageAction() {
         log.info("Creating OutputMessageAction");
@@ -20,7 +21,7 @@ public class OutputMessageAction implements Action {
 
     @Override
     public String getName() {
-        return "output_message";
+        return NAME;
     }
 
     @Override
@@ -35,7 +36,8 @@ public class OutputMessageAction implements Action {
         );
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> input) {
+    @Override
+    public ActionResult apply(Agent agent, Map<String, String> input,  Map<String, String> context) {
         log.debug("Outputmessage action message={}", input.get("message"));
 
         String message = input.get("message");
@@ -44,9 +46,8 @@ public class OutputMessageAction implements Action {
         }
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .result("The message has been displayed to the user.")
-                .output(message)
-                .summary("")
+                .result(message)
+                .summary("The message has been displayed to the user.")
                 .build();
     }
 }

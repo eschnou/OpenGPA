@@ -89,7 +89,7 @@ for configuration options and the spring-ai documentation to configure support f
 
 ```bash
 mvn clean package -Pproduction
-OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.1.0.jar
+OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.2.0.jar
 ```
 
 Open the UI on [http://localhost:8000](http://localhost:8000) and login with username `opengpa` and password `opengpa`.

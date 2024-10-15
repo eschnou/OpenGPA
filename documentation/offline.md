@@ -21,7 +21,7 @@ at [Ollama](https://ollama.com/download).
 Edit the start script in `devops/opengpa.sh` to change the spring profile.
 
 ```
-java -jar opengpa-server/target/opengpa-server-0.1-SNAPSHOT.jar --spring.profiles.active=ollama
+java -jar opengpa-server/target/opengpa-server-0.2.jar --spring.profiles.active=ollama
 ```
 
 If Ollama is running on a different server:

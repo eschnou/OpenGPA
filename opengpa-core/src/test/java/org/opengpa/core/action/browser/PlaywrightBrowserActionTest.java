@@ -112,7 +112,7 @@ class PlaywrightBrowserActionTest {
         ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
-        assertEquals("Processed page at http://example.com", result.getSummary());
+        assertEquals("Processed webpage 'Example Page' from example.com", result.getSummary());
         assertEquals("This page is about examples.", result.getResult());
         assertNull(result.getError());
 

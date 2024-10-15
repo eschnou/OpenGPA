@@ -1,2 +1,2 @@
 #!/bin/sh
-java -jar opengpa-server/target/opengpa-server-0.1-SNAPSHOT.jar
+java -jar opengpa-server/target/opengpa-server-0.2.0.jar

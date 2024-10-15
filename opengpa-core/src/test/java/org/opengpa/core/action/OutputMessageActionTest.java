@@ -54,8 +54,8 @@ class OutputMessageActionTest {
         ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
-        assertEquals("The message has been displayed to the user.", result.getResult());
-        assertEquals("", result.getSummary());
+        assertEquals(testMessage, result.getResult());
+        assertEquals("The message has been displayed to the user.", result.getSummary());
     }
 
     @Test
@@ -66,8 +66,8 @@ class OutputMessageActionTest {
         ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
-        assertEquals("The message has been displayed to the user.", result.getResult());
-        assertEquals("", result.getSummary());
+        assertEquals("", result.getResult());
+        assertEquals("The message has been displayed to the user.", result.getSummary());
     }
 
     @Test
@@ -78,7 +78,7 @@ class OutputMessageActionTest {
         ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
-        assertEquals("The message has been displayed to the user.", result.getResult());
-        assertEquals("", result.getSummary());
+        assertEquals("", result.getResult());
+        assertEquals("The message has been displayed to the user.", result.getSummary());
     }
 }

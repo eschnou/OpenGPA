@@ -12,7 +12,7 @@
 
     <groupId>org.opengpa</groupId>
     <artifactId>opengpa-server</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>jar</packaging>
     <name>opengpa server</name>
     <description>Standalone server and frontend.</description>

@@ -3,8 +3,8 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/opengpa?style=social)](https://twitter.com/opengpa) &ensp;
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**OpenGPA** is an Open-source General Purpose Agent. A self-hosted solution boasting capabilities similar to
-popular GPTs.
+**OpenGPA** is an Open-source General Purpose Agent. A self-hosted solution supporting smart AI agent developments
+with chain of thought, tool use and memory access through RAG.
 
 - Agentic system with multi-step-reasoning, chain-of-thought, ReAct, tool use etc
 - Support for [all major LLMs](https://docs.spring.io/spring-ai/reference/api/chatmodel.html) such as LLama, Mistral, Anthropic, OpenAI, etc.

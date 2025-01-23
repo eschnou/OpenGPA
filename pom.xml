@@ -43,6 +43,14 @@
         <url>https://github.com/eschnou/opengpa/actions</url>
     </ciManagement>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/eschnou/OpenGPA</url>
+        </repository>
+    </distributionManagement>
+
     <developers>
         <developer>
             <id>eschnou</id>

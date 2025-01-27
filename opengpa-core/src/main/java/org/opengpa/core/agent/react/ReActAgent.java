@@ -112,7 +112,7 @@ public class ReActAgent implements Agent {
 
         // The context is expected to be complete at all time, we thus update our current
         // context with the new one.
-        updateContext(context);
+        context = updateContext(context);
 
         // Prepare the system prompt. This one contains non user/task specific
         // information such as the list of possible actions.
@@ -200,11 +200,12 @@ public class ReActAgent implements Agent {
         return null;
     }
 
-    private void updateContext(Map<String, String> context) {
+    private Map<String, String> updateContext(Map<String, String> context) {
         context.forEach((k, v) -> this.context.put(k, v));
         this.context.put("dayOfWeek", DayOfWeek.from(LocalDate.now()).name());
         this.context.put("date", LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy")));
         this.context.put("time", java.time.LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        return this.context;
     }
 
     private ReActAgentOutput parseNextAction(BeanOutputParser<ReActAgentOutput> outputParser, Generation response) {

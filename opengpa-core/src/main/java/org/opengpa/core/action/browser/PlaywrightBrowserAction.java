@@ -1,6 +1,7 @@
 package org.opengpa.core.action.browser;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.ScreenshotType;
 import com.microsoft.playwright.options.WaitUntilState;
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import lombok.extern.slf4j.Slf4j;
@@ -11,14 +12,22 @@ import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.config.PlaywrightConfig;
+import org.springframework.ai.chat.messages.Media;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.image.ImageMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +46,7 @@ public class PlaywrightBrowserAction implements Action {
             Question: %s
             Page title: %s
             Content:
-            
+           
             """;
     public static final String NAME = "browse_web";
 

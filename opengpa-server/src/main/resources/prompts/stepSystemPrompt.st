@@ -15,5 +15,6 @@ The task is happening in this context:
 {context}
 
 You have access to the following list of actions, you cannot use actions not in this list.
+When invoking an action pay attention that the input parameters are always string values.
 {actions}
 

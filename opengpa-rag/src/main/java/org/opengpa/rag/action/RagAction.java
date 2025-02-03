@@ -70,7 +70,7 @@ public class RagAction implements Action {
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("query", "The query to search for in the document store."),
-                ActionParameter.from("keywords", "The keywords to use to find interesting document chunks.")
+                ActionParameter.from("keywords", "A comma separated list of the keywords to use to find interesting document chunks.")
         );
     }
 

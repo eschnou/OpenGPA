@@ -77,10 +77,24 @@ Make OpenGPA enterprise ready:
 
 ## 🚀 Getting started
 
+In case of trouble, please reach out on [Discord](https://discord.gg/3XPsmCRNE2) for help!
+
+### Run with Docker
+
+The simplest way to build and launch OpenGPA is using the provided Docker compose file:
+
+```bash
+export OPENAI_API_KEY=sk-*** 
+docker compose up --build
+```
+
+This will build the opengpa image from source with all required dependencies (in particular the Playwright
+dependencies for web browsing) and launch the service on port 8000.
+
 ### Build and run the server
 
 If you are on a Mac, the following should be enough to get you started and running this
-locally. In case of trouble, please reach out on [Discord](https://discord.gg/3XPsmCRNE2). 
+locally.  
 
 > [!WARNING]
 > Building requires __Java 21__. If you are on a Mac, you can easily install it
@@ -89,13 +103,17 @@ locally. In case of trouble, please reach out on [Discord](https://discord.gg/3X
 By default, opengpa is using OpenAI gpt-4o as its LLM. Check the `application.properties` file 
 for configuration options and the spring-ai documentation to configure support for other LLMs.
 
+
 ```bash
 mvn clean package -Pproduction
+docker compose up -d db
 OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.2.0.jar
 ```
 
 Open the UI on [http://localhost:8000](http://localhost:8000) and login with username `opengpa` and password `opengpa`.
 
+The `docker compose up -d db` lauches the database part from the docker compose as opengpa requires
+a postgres database with pg_vector for the RAG feature. 
 
 ### Debugging
 
@@ -119,7 +137,7 @@ opengpa.server.log-folder=/tmp/opengpa/logs
 
 MIT License
 
-Copyright (c) 2024 Laurent Eschenauer
+Copyright (c) 2024-2025 Laurent Eschenauer
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

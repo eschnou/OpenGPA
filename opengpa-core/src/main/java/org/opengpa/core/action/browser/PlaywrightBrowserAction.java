@@ -59,16 +59,19 @@ public class PlaywrightBrowserAction implements Action {
     public PlaywrightBrowserAction(PlaywrightConfig playwrightConfig, ChatModel chatModel) {
         this.playwrightConfig = playwrightConfig;
         this.chatModel = chatModel;
+
         this.playwright = Playwright.create();
 
+        // Use chromium instead of chrome
         BrowserType browserType = playwright.chromium();
-        this.browser = browserType.launch(new BrowserType.LaunchOptions().setHeadless(playwrightConfig.isHeadless()));
+        this.browser = browserType.launch(new BrowserType.LaunchOptions()
+                .setHeadless(playwrightConfig.isHeadless()));
 
-        Browser.NewContextOptions contextOptions = new Browser.NewContextOptions();
-        contextOptions.setUserAgent(BROWSER_AGENT);
+        Browser.NewContextOptions contextOptions = new Browser.NewContextOptions()
+                .setUserAgent(BROWSER_AGENT);
 
         this.browserContext = browser.newContext(contextOptions);
-        log.info("Creating PlaywrightBrowserAction");
+        log.info("Creating PlaywrightBrowserAction with Chromium configuration");
     }
 
     @Override

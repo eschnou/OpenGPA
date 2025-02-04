@@ -22,11 +22,15 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/opengpa
       SPRING_DATASOURCE_USERNAME: opengpa
       SPRING_DATASOURCE_PASSWORD: opengpa
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       OPENAI_API_KEY: ${OPENAI_API_KEY:-your-api-key}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3}
     ports:
       - "8000:8000"
     volumes:

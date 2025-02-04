@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: opengpa
+      POSTGRES_USER: opengpa
+      POSTGRES_PASSWORD: opengpa
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opengpa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  opengpa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/opengpa
+      SPRING_DATASOURCE_USERNAME: opengpa
+      SPRING_DATASOURCE_PASSWORD: opengpa
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-your-api-key}
+    ports:
+      - "8000:8000"
+    volumes:
+      - opengpa_logs:/var/log/opengpa
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  opengpa_logs:

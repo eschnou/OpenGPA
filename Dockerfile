@@ -45,7 +45,7 @@ RUN mkdir -p /var/log/opengpa
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
 # Expose the application port
-EXPOSE 8000
+EXPOSE 3000
 
 # Set environment variables
 ENV JAVA_OPTS="-Xmx512m"

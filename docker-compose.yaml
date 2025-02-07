@@ -32,7 +32,7 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3}
     ports:
-      - "8000:8000"
+      - "3000:3000"
     volumes:
       - opengpa_logs:/var/log/opengpa
     depends_on:

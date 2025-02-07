@@ -89,7 +89,8 @@ docker compose up --build
 ```
 
 This will build the opengpa image from source with all required dependencies (in particular the Playwright
-dependencies for web browsing) and launch the service on port 8000.
+dependencies for web browsing) and launch the service on port 3000. Opening http://localhost:3000 will lead you
+to the OpenAPI documentation.
 
 ### Build and run the server
 
@@ -110,12 +111,22 @@ docker compose up -d db
 OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.2.0.jar
 ```
 
-Open the UI on [http://localhost:8000](http://localhost:8000) and login with username `opengpa` and password `opengpa`.
-
 The `docker compose up -d db` lauches the database part from the docker compose as opengpa requires
 a postgres database with pg_vector for the RAG feature. 
 
-### Debugging
+## 🖥️ User Interface
+
+The User Interface is available in the [OpenGPA Frontend repository](https://github.com/eschnou/opengpa-frontend) and
+can be launched with docker.
+
+```
+git clone https://github.com/eschnou/opengpa-frontend
+cd opengpa-frontend
+docker build --build-arg -t opengpa-frontend:latest .
+docker run -p 8000:8000 opengpa-frontend
+```
+
+### 🐛 Debugging
 
 For debugging purposes you can log all interactions and prompts using the following config:
 ```

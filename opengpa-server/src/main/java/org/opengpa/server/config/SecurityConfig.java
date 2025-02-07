@@ -1,90 +1,89 @@
 package org.opengpa.server.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vaadin.flow.spring.security.VaadinWebSecurity;
-import lombok.Data;
-import org.opengpa.frontend.views.LoginView;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import lombok.RequiredArgsConstructor;
+import org.opengpa.server.filter.AwsXRayFilter;
+import org.opengpa.server.filter.JwtAuthenticationFilter;
+import org.opengpa.server.filter.MdcFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@EnableWebSecurity
 @Configuration
-public class SecurityConfig extends VaadinWebSecurity {
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
 
-    private final ApplicationConfig applicationConfig;
+    private final MdcFilter mdcFilter;
+    private final AwsXRayFilter awsXRayFilter;
 
-    public SecurityConfig(ApplicationConfig applicationConfig) {
-        this.applicationConfig = applicationConfig;
-    }
-
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(
-                auth -> auth.requestMatchers(new AntPathRequestMatcher("/actuator/**"))
-                .permitAll());
-
-        super.configure(httpSecurity);
-        setLoginView(httpSecurity, LoginView.class);
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
     }
 
     @Bean
-    UserDetailsManager userDetailsManager(List<UserDetails> users) {
-        return new InMemoryUserDetailsManager(users);
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "opengpa.server.auth", name = "provider", havingValue = "memory", matchIfMissing = true)
-    List<UserDetails> inMemoryUsers() {
-        return Arrays.asList(User.withUsername(applicationConfig.getUsername())
-                .password(String.format("{noop}%s", applicationConfig.getPassword()))
-                .roles("USER").build());
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/auth/**",
+                                "/error",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api-docs/**",
+                                "/api-docs.yaml",
+                                "/",
+                                "/public/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(mdcFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(awsXRayFilter, MdcFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "opengpa.server.auth", name = "provider", havingValue = "file", matchIfMissing = false)
-    List<UserDetails> inFileUsers(@Value("${opengpa.server.auth.file}") String userDetailsFilePath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        List<FileUser> users = objectMapper.readValue(new File(userDetailsFilePath), objectMapper.getTypeFactory().constructCollectionType(List.class, FileUser.class));
-        List<UserDetails> userDetails = new ArrayList<>();
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*")); // More permissive for development
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*")); // Allow all headers
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
-        for (FileUser user : users) {
-            userDetails.add(new User(user.getUsername(), user.getPassword(), user.getRoles().stream()
-                    .map(SimpleGrantedAuthority::new)
-                    .collect(Collectors.toList())));
-        }
-
-        return userDetails;
-    }
-
-    @Bean
-    @ConditionalOnProperty(prefix = "opengpa.server.auth", name = "provider", havingValue = "file", matchIfMissing = false)
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Data
-    private static class FileUser {
-        private String username;
-        private String password;
-        private List<String> roles;
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

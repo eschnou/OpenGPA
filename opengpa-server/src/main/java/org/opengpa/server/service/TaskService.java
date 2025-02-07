@@ -104,7 +104,7 @@ public class TaskService {
         List<Task> userTasks = tasks.getOrDefault(username, new ArrayList<>());
         return userTasks.stream()
                 .sorted(Comparator.comparing(task -> task.getAgent().getStartTime()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()).reversed();
     }
 
     public List<AgentStep> getSteps(String username, String agentId) {

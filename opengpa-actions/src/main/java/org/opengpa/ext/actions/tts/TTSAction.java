@@ -77,7 +77,7 @@ public class TTSAction implements Action {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .summary(String.format("Text-to-speech rendering completed successfully and saved into %s in the workspace.", input.get("filename")))
+                .summary(String.format("Text-to-speech rendering completed successfully and saved to %s in the workspace.", filename))
                 .result(String.format("Audio file generated and saved to %s in the workspace.", filename))
                 .documents(Arrays.asList(document))
                 .build();

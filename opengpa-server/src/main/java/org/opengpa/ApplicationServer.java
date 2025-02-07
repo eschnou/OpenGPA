@@ -1,6 +1,5 @@
 package org.opengpa;
 
-import com.vaadin.flow.spring.annotation.EnableVaadin;
 import org.opengpa.core.config.EnableOpenGPA;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableConfigurationProperties
 @EnableAsync
 @EnableOpenGPA
-@EnableVaadin
 public class ApplicationServer {
 
 	public static void main(String[] args) {

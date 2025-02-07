@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
+import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "opengpa.server")
@@ -13,7 +14,7 @@ public class ApplicationConfig {
     boolean logPrompt = false;
     File logFolder;
 
-    String username = "opengpa";
-    String password = "opengpa";
+    private boolean closedBeta;
+    private List<String> inviteCodes;
 
 }

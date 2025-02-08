@@ -12,7 +12,7 @@
 
     <groupId>org.opengpa</groupId>
     <artifactId>opengpa-rag</artifactId>
-    <version>0.2.1</version>
+    <version>0.3.0</version>
     <name>opengpa rag</name>
     <description>RAG implementation for OpenGPA</description>
 

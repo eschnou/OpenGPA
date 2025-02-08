@@ -134,7 +134,6 @@ opengpa.server.log-folder=/tmp/opengpa/logs
 ```
 
 # Documentation
-- [Setting up an OpengGPA server](documentation/setup.md)
 - [Using local open-source LLM](documentation/offline.md)
 - [Creating a custom Action](documentation/actions.md)
 

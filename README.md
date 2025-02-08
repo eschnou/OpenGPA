@@ -121,7 +121,7 @@ can be launched with docker.
 ```
 git clone https://github.com/eschnou/opengpa-frontend
 cd opengpa-frontend
-docker build --build-arg -t opengpa-frontend:latest .
+docker build -t opengpa-frontend:latest .
 docker run -p 8000:8000 opengpa-frontend
 ```
 

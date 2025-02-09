@@ -22,7 +22,12 @@ jobs:
           if [ -n "${{ github.event.inputs.version_override }}" ]; then
             VERSION="${{ github.event.inputs.version_override }}"
           else
-            VERSION=$(cat .version | tr -d '[:space:]')
+            VERSION=$(cat .version | tr -d '[:space:]' | tr -d '\n')
+          fi
+          # Validate version format
+          if ! [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Invalid version format. Expected format: x.y.z (e.g., 0.3.0)"
+            exit 1
           fi
           echo "Using version: $VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT

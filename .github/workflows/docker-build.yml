@@ -43,8 +43,8 @@ jobs:
           context: .
           push: true
           tags: |
-            opengpa/server:latest
-            opengpa/server:${{ steps.get_version.outputs.VERSION }}
+            eschnou/opengpa-server:latest
+            eschnou/opengpa-server:${{ steps.get_version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=opengpa/server:buildcache
-          cache-to: type=registry,ref=opengpa/server:buildcache,mode=max
+          cache-from: type=registry,ref=eschnou/opengpa-server:buildcache
+          cache-to: type=registry,ref=eschnou/opengpa-server:buildcache,mode=max

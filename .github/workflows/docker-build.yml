@@ -43,8 +43,8 @@ jobs:
           context: .
           push: true
           tags: |
-            opengpa/opengpa:latest
-            opengpa/opengpa:${{ steps.get_version.outputs.VERSION }}
+            opengpa/server:latest
+            opengpa/server:${{ steps.get_version.outputs.VERSION }}
           platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=opengpa/opengpa:buildcache
-          cache-to: type=registry,ref=opengpa/opengpa:buildcache,mode=max
+          cache-from: type=registry,ref=opengpa/server:buildcache
+          cache-to: type=registry,ref=opengpa/server:buildcache,mode=max

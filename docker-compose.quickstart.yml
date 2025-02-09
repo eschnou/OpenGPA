@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: opengpa
+      POSTGRES_USER: opengpa
+      POSTGRES_PASSWORD: opengpa
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U opengpa"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: eschnou/opengpa-server:latest
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-default}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/opengpa
+      SPRING_DATASOURCE_USERNAME: opengpa
+      SPRING_DATASOURCE_PASSWORD: opengpa
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3}
+    ports:
+      - "3000:3000"
+    volumes:
+      - opengpa_logs:/var/log/opengpa
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    image: eschnou/opengpa-frontend:latest
+    ports:
+      - "8000:8000"
+    environment:
+      VITE_API_URL: http://localhost:3000
+      VITE_SIGNUP_ENABLED: ${SIGNUP_ENABLED:-true}
+      VITE_REQUIRE_INVITE_CODE: ${REQUIRE_INVITE:-false}
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  opengpa_logs:

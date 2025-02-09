@@ -78,7 +78,19 @@ Make OpenGPA enterprise ready:
 
 In case of trouble, please reach out on [Discord](https://discord.gg/3XPsmCRNE2) for help!
 
-### Run with Docker
+### Quickstart (no need to clone this repo)
+
+The `docker-compose.quickstart.yml` makes it easy to launch the latest stable version with 
+a postgresql database (with pg_vector extension), the opengpa backend and the frontend, on the same
+host.
+
+```
+curl -O https://raw.githubusercontent.com/eschnou/opengpa-server/main/docker-compose.quickstart.yml
+echo "OPENAI_API_KEY=your-key-here" > .env
+docker compose -f docker-compose.quickstart.yml up -d
+```
+
+### Build and run with Docker
 
 The simplest way to build and launch OpenGPA is using the provided Docker compose file:
 

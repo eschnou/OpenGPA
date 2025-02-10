@@ -125,7 +125,7 @@ OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.2.0.jar
 The `docker compose up -d db` lauches the database part from the docker compose as opengpa requires
 a postgres database with pg_vector for the RAG feature. 
 
-## 🖥️ User Interface
+### 🖥️ User Interface
 
 The User Interface is available in the [OpenGPA Frontend repository](https://github.com/eschnou/opengpa-frontend) and
 can be launched with docker.
@@ -137,14 +137,6 @@ docker build -t opengpa-frontend:latest .
 docker run -p 8000:8000 opengpa-frontend
 ```
 
-## 🤖 REST API
-
-You can interact with your agent programatically through the [REST API](documentation/api.md). The up-to-date API Documentation
-is available on the backend server at [http://localhost:3000/swagger-ui.html](http://localhost:3000/swagger-ui.html)
-with Swagger. You can also download the [yml](http://localhost:3000/api-docs.yml) or [json](http://localhost:3000/api-docs)
-version of the API Documentation.
-
-
 ### 🐛 Debugging
 
 For debugging purposes you can log all interactions and prompts using the following config:
@@ -152,6 +144,13 @@ For debugging purposes you can log all interactions and prompts using the follow
 opengpa.server.log-prompt=true
 opengpa.server.log-folder=/tmp/opengpa/logs
 ```
+
+# 🤖 REST API
+
+You can interact with your agent programatically through the [REST API](documentation/api.md). The up-to-date API Documentation
+is available on the backend server at [http://localhost:3000/swagger-ui.html](http://localhost:3000/swagger-ui.html)
+with Swagger. You can also download the [yml](http://localhost:3000/api-docs.yml) or [json](http://localhost:3000/api-docs)
+version of the API Documentation.
 
 # Documentation
 - [Using local open-source LLM](documentation/offline.md)

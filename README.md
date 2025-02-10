@@ -1,4 +1,4 @@
-# OpenGPA - (Open) Agentic is all you need 😁
+# OpenGPA - Self-hosted General Purpose Agent
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/opengpa?style=social)](https://twitter.com/opengpa) &ensp;
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

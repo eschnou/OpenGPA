@@ -137,6 +137,14 @@ docker build -t opengpa-frontend:latest .
 docker run -p 8000:8000 opengpa-frontend
 ```
 
+## 🤖 REST API
+
+You can interact with your agent programatically through the [REST API](documentation/api.md). The up-to-date API Documentation
+is available on the backend server at [http://localhost:3000/swagger-ui.html](http://localhost:3000/swagger-ui.html)
+with Swagger. You can also download the [yml](http://localhost:3000/api-docs.yml) or [json](http://localhost:3000/api-docs)
+version of the API Documentation.
+
+
 ### 🐛 Debugging
 
 For debugging purposes you can log all interactions and prompts using the following config:

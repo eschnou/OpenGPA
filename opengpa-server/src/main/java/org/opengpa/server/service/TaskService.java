@@ -2,11 +2,14 @@ package org.opengpa.server.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opengpa.core.action.Action;
+import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.agent.AgentStep;
 import org.opengpa.core.agent.react.ReActAgent;
 import org.opengpa.core.workspace.Workspace;
 import org.opengpa.server.config.ApplicationConfig;
+import org.opengpa.server.exceptions.BadRequestException;
+import org.opengpa.server.exceptions.ResourceNotFoundException;
 import org.opengpa.server.exceptions.TaskNotFoundException;
 import org.opengpa.server.helper.topic.TopicService;
 import org.opengpa.server.model.Task;
@@ -56,13 +59,7 @@ public class TaskService {
             agent.enableLogging(applicationConfig.getLogFolder());
         }
 
-        Task task = Task.builder()
-                .created(ZonedDateTime.now())
-                .context(additionalInputs)
-                .taskId(agent.getId())
-                .agent(agent)
-                .title(input.substring(0, Math.min(25, input.length())))
-                .build();
+        Task task = Task.builder().created(ZonedDateTime.now()).context(additionalInputs).taskId(agent.getId()).agent(agent).title(input.substring(0, Math.min(25, input.length()))).build();
 
         userTasks.add(task);
         tasks.put(username, userTasks);
@@ -70,14 +67,8 @@ public class TaskService {
         return task;
     }
 
-    @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ListenableFuture<AgentStep> asyncNextStep(String username, String task, String userInput, Map<String, String> additionalInputs) {
-        return AsyncResult.forValue(nextStep(username, task, userInput, additionalInputs));
-    }
-
     @Transactional
-    public AgentStep nextStep(String username, String taskId, String userInput, Map<String, String> context) {
+    public AgentStep nextStep(String username, String taskId, String userInput, Map<String, String> stateData, Map<String, String> context) {
         List<Task> userTasks = tasks.get(username);
         Optional<Task> task = userTasks.stream().filter(a -> a.getTaskId().equals(taskId)).findFirst();
 
@@ -86,10 +77,14 @@ public class TaskService {
             throw new TaskNotFoundException(taskId.toString());
         }
 
-        AgentStep step = task.get().getAgent().executeNextStep(userInput, context);
+        AgentStep step = task.get().getAgent().executeNextStep(userInput, stateData, context);
 
+        // Do not add the step if it was already there
         List<AgentStep> taskSteps = steps.getOrDefault(taskId, new ArrayList<>());
-        taskSteps.add(step);
+        if (taskSteps.isEmpty() || !taskSteps.get(taskSteps.size() - 1).getId().equals(step.getId())) {
+            taskSteps.add(step);
+        }
+
         steps.put(taskId, taskSteps);
 
         topicService.summarize(task.get()).ifPresent(s -> {
@@ -102,9 +97,7 @@ public class TaskService {
 
     public List<Task> getTasks(String username) {
         List<Task> userTasks = tasks.getOrDefault(username, new ArrayList<>());
-        return userTasks.stream()
-                .sorted(Comparator.comparing(task -> task.getAgent().getStartTime()))
-                .collect(Collectors.toList()).reversed();
+        return userTasks.stream().sorted(Comparator.comparing(task -> task.getAgent().getStartTime())).collect(Collectors.toList()).reversed();
     }
 
     public List<AgentStep> getSteps(String username, String agentId) {

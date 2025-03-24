@@ -53,6 +53,8 @@ public class ReActAgent implements Agent {
 
     private final List<AgentStep> executedSteps = new ArrayList<>();
 
+    private final Map<String, AgentStep> ongoingActions = new HashMap<>();
+
     private final String task;
 
     private final UUID uuid;
@@ -102,12 +104,20 @@ public class ReActAgent implements Agent {
     }
 
     @Override
-    public AgentStep executeNextStep(String userInput, Map<String, String> context) {
-        // If this is not the first step and there is a userInput, we consider
-        // this a 'feedback' on the last executed action and it to the previous step.
-        if (userInput != null && !userInput.isEmpty() && !executedSteps.isEmpty()) {
+    public AgentStep executeNextStep(String userInput, Map<String, String> stateData, Map<String, String> context) {
+        // Check if we have an ongoing action that needs continuation
+        if (!executedSteps.isEmpty()) {
             AgentStep lastStep = executedSteps.get(executedSteps.size() - 1);
-            lastStep.setFeedback(userInput);
+
+            // If the last step is waiting for input, this is a continuation
+            if (lastStep.isAwaitingInput()) {
+                return continueAction(lastStep, stateData, context);
+            }
+
+            // If a userInput is provided, it is just feedback
+            if (userInput != null && !userInput.isEmpty()) {
+                lastStep.setFeedback(userInput);
+            }
         }
 
         // The context is expected to be complete at all time, we thus update our current
@@ -155,6 +165,61 @@ public class ReActAgent implements Agent {
                 .build();
 
         executedSteps.add(step);
+
+        // If the action is not completed, store it for potential continuation
+        if (step.needsContinuation()) {
+            ongoingActions.put(result.getActionId(), step);
+        }
+
+        return step;
+    }
+
+    /**
+     * Continue an action that was previously started and is in a non-completed state
+     */
+    private AgentStep continueAction(AgentStep step, Map<String, String> stateData, Map<String, String> context) {
+        // The context is expected to be complete at all time, we thus update our current
+        // context with the new one.
+        context = updateContext(context);
+
+        // Find the action that needs to be continued
+        Optional<Action> matchingAction = availableActions.stream()
+                .filter(a -> a.getName().equals(step.getAction().getName()))
+                .findFirst();
+
+        if (!matchingAction.isPresent()) {
+            // This should not happen in normal circumstances
+            ActionResult errorResult = ActionResult.failed(
+                    "Cannot continue action: action not found",
+                    "The action to be continued does not exist.");
+
+            step.setResult(errorResult);
+            step.setFinal(true);
+            return step;
+        }
+
+        // Cancel or continue the action
+        if (stateData != null) {
+            ActionResult result = matchingAction.get().continueAction(
+                    this,
+                    step.getResult().getActionId(),
+                    stateData,
+                    context);
+
+            // Update the step with the continued action result
+            step.setResult(result);
+        } else {
+            ActionResult result = matchingAction.get().cancelAction(
+                    this,
+                    step.getResult().getActionId());
+
+            // Update the step with the canceled action result
+            step.setResult(result);
+            step.setFinal(true);
+        }
+
+        // Update ongoing actions map
+        ongoingActions.remove(step.getResult().getActionId());
         return step;
     }
 
@@ -305,15 +370,15 @@ public class ReActAgent implements Agent {
             if (matchingAction.isPresent()) {
                 return matchingAction.get().apply(this, action.getParameters(), context);
             } else {
-                return ActionResult.builder()
-                        .summary(String.format("Agent invoked a non existent action {}", action.getName()))
-                        .status(ActionResult.Status.FAILURE)
-                        .error(String.format("The action '{}' does not exist, use only action available to you.", action.getName()))
-                        .build();
+                return ActionResult.failed(
+                        String.format("The action '%s' does not exist, use only action available to you.", action.getName()),
+                        String.format("Agent invoked a non existent action %s", action.getName())
+                );
             }
         }
 
         return ActionResult.builder()
+                .status(ActionResult.Status.SUCCESS)
                 .summary("No action at this step.")
                 .build();
     }

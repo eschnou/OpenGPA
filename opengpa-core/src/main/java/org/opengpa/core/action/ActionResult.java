@@ -11,36 +11,95 @@ import org.opengpa.core.workspace.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonPropertyOrder({ "status", "summary", "result", "error"})
+@JsonPropertyOrder({ "status", "state", "summary", "result", "error", "stateData"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ActionResult {
 
     public enum Status {
         SUCCESS,
-        FAILURE
+        FAILURE,
+        AWAITING_INPUT,
+        IN_PROGRESS
     }
 
-    // Could the engine perform the action or not, will be shared with the agent
+    // Current status of the action execution
     private Status status;
+
+    // Unique identifier for this action result, useful for tracking state
+    @Builder.Default
+    private String actionId = UUID.randomUUID().toString();
 
     // In case of error, some details so the agent can pick a new action
     private String error;
 
-    // The result of the action, usually a complex object that will be serialized to JSON when passed back
-    // to the model when moving to the next step.
+    // The result of the action, usually a complex object that will be serialized to JSON
     private Object result;
 
     // A user-friendly summary of the action, will be used to show to the user what the agent is doing
     private String summary;
+
+    // Additional data specific to the current state, could include form fields, progress information, etc.
+    private Map<String, String> stateData;
 
     // A list of documents created in the workspace by this action
     @Builder.Default
     @JsonIgnore
     private List<Document> documents = new ArrayList<>();
 
+    // Helper methods for state management
+    public boolean isCompleted() {
+        return status == Status.SUCCESS || status == Status.FAILURE;
+    }
+
+    public boolean isAwaitingInput() {
+        return status == Status.AWAITING_INPUT;
+    }
+
+    public boolean isInProgress() {
+        return status == Status.IN_PROGRESS;
+    }
+
+    public boolean isFailed() {
+        return status == Status.FAILURE;
+    }
+
+    // Static builders for common states
+    public static ActionResult completed(Object result, String summary) {
+        return ActionResult.builder()
+                .status(Status.SUCCESS)
+                .result(result)
+                .summary(summary)
+                .build();
+    }
+
+    public static ActionResult inProgress(String summary, Map<String, String> stateData) {
+        return ActionResult.builder()
+                .status(Status.IN_PROGRESS)
+                .summary(summary)
+                .stateData(stateData)
+                .build();
+    }
+
+    public static ActionResult awaitingInput(String summary, Map<String, String> stateData) {
+        return ActionResult.builder()
+                .status(Status.AWAITING_INPUT)
+                .summary(summary)
+                .stateData(stateData)
+                .build();
+    }
+
+    public static ActionResult failed(String error, String summary) {
+        return ActionResult.builder()
+                .status(Status.FAILURE)
+                .error(error)
+                .summary(summary)
+                .build();
+    }
 }

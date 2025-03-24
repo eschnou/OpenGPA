@@ -8,13 +8,16 @@ import lombok.Data;
 import org.opengpa.core.action.ActionResult;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Builder
-@JsonPropertyOrder({ "input", "reasoning", "action", "final", "result", "feedback"})
+@JsonPropertyOrder({ "id", "input", "reasoning", "action", "final", "result", "feedback", "state"})
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AgentStep
-{
+public class AgentStep {
+
+    @Builder.Default
+    String id = UUID.randomUUID().toString();
 
     String input;
 
@@ -30,4 +33,21 @@ public class AgentStep
     ActionResult result;
 
     boolean isFinal;
+
+    // Helper methods for state checking
+    public boolean isCompleted() {
+        return result != null && result.isCompleted();
+    }
+
+    public boolean isAwaitingInput() {
+        return result != null && result.isAwaitingInput();
+    }
+
+    public boolean isInProgress() {
+        return result != null && result.isInProgress();
+    }
+
+    public boolean needsContinuation() {
+        return result != null && !result.isCompleted() && !result.isFailed();
+    }
 }

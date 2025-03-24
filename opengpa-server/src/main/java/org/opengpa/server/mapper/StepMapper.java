@@ -22,6 +22,7 @@ public class StepMapper {
         resultDTO.setStatus(step.getResult().getStatus().toString());
         resultDTO.setError(step.getResult().getError());
         resultDTO.setSummary(step.getResult().getSummary());
+        resultDTO.setStateData(step.getResult().getStateData());
         resultDTO.setDetails(step.getResult().getResult());
 
         // List all artifcats created in this step

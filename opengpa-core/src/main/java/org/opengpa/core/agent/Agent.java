@@ -16,5 +16,5 @@ public interface Agent {
 
     Date getStartTime();
 
-    AgentStep executeNextStep(String userInput, Map<String, String> context);
+    AgentStep executeNextStep(String userInput, Map<String, String> stateData, Map<String, String> context);
 }

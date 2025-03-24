@@ -77,7 +77,7 @@ public class TasksController {
     @PostMapping(value = "/{task_id}")
     public StepDTO progressTask(Principal principal, @PathVariable("task_id") String taskId, @Valid @RequestBody InputDTO inputDTO) {
         log.debug("progressTask username={} taskId={}", principal.getName(), taskId);
-        AgentStep agentStep = taskService.nextStep(principal.getName(), taskId, inputDTO.getMessage(), new HashMap<>());
+        AgentStep agentStep = taskService.nextStep(principal.getName(), taskId, inputDTO.getMessage(), inputDTO.getStateData(), new HashMap<>());
         return StepMapper.toDTO(agentStep);
     }
 

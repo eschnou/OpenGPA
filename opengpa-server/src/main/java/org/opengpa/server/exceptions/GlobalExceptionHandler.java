@@ -37,6 +37,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
     }
 
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<ApiError> handleNotFound(TaskNotFoundException ex, HttpServletRequest request) {
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
         return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage(), request);

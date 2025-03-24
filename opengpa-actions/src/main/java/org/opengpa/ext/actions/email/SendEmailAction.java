@@ -1,6 +1,6 @@
+// SendEmailAction.java
 package org.opengpa.ext.actions.email;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -32,8 +32,8 @@ public class SendEmailAction implements Action {
 
     public static final String ACTION_NAME = "send_email";
 
+    private final Map<String, ActionResult> ongoingActions = new HashMap<>();
     private final SendEmailActionConfig emailConfig;
-
     private final ChatModel chatModel;
 
     private static final String PROMPT = """
@@ -68,23 +68,26 @@ public class SendEmailAction implements Action {
 
     @Override
     public String getDescription() {
-        return "Ask the assistant to write an email";
+        return "Send an email to a recipient.";
     }
 
     @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("recipient", "The email address of the recipient"),
-                ActionParameter.from("request", "Do not provide email body, instead provide a detailed " +
-                        "request including purpose, recipient name, and any other information helpful for the assistant" +
-                        "to write the email.")
+                ActionParameter.from("content", "Provide all content for the email, including recipient name, email body, etc.")
         );
+    }
+
+    @Override
+    public boolean supportsStatefulExecution() {
+        return true;
     }
 
     @Override
     public ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context) {
         String recipient = input.get("recipient");
-        String request = input.get("request");
+        String request = input.get("content");
 
         // Prepare system prompt
         var outputParser = new BeanOutputParser<>(EmailWriterResult.class);
@@ -104,43 +107,74 @@ public class SendEmailAction implements Action {
         Optional<EmailWriterResult> generatedEmail = parseResult(outputParser, response);
 
         // Verify we have proper content
-        if (!generatedEmail.isPresent()) {
-            log.error("Failed to send email - the assistant could not generate the content.");
-            return ActionResult.builder()
-                    .status(ActionResult.Status.FAILURE)
-                    .summary("Failed to send email")
-                    .build();
+        if (generatedEmail.isEmpty()) {
+            log.error("Failed to generate email - the assistant could not generate the content.");
+            return ActionResult.failed("Email generation failed", "Failed to generate email content");
         }
 
-        // Prepare the final body
-        StringBuilder emailBody = new StringBuilder();
-        emailBody.append(generatedEmail.get().getBody());
-        emailBody.append(String.format("\nref:%s", agent.getId()));
+        // Create state data with the generated email content and recipient
+        Map<String, String> stateData = new HashMap<>();
+        stateData.put("recipient", recipient);
+        stateData.put("subject", generatedEmail.get().getTitle());
+        stateData.put("body", generatedEmail.get().getBody());
+
+        // Return awaiting input state to get user confirmation
+        ActionResult actionResult = ActionResult.awaitingInput(
+                "Email draft prepared. Please review the subject and body before sending.",
+                stateData
+        );
+
+        // Keep track of ongoing actions
+        ongoingActions.put(actionResult.getActionId(), actionResult);
+
+        return actionResult;
+    }
+
+    @Override
+    public ActionResult continueAction(Agent agent, String actionId,
+                                       Map<String, String> stateData, Map<String, String> context) {
+
+        // Lookup ongoing action
+        ActionResult ongoingAction = ongoingActions.get(actionId);
+        if (ongoingAction == null) {
+            log.error("The action '" + actionId + "' does not exist");
+            return ActionResult.failed("The action '" + actionId + "' does not exist", "Attempted to continue an action that doesn't exist.");
+        }
+
+        // Extract data from state
+        String recipient = stateData.getOrDefault("recipient", ongoingAction.getStateData().get("recipient"));
+        String subject = stateData.getOrDefault("subject", ongoingAction.getStateData().get("subject"));
+        String body = stateData.getOrDefault("body", ongoingAction.getStateData().get("body"));
+
+        // Remove the ongoing action as we will finalize it
+        ongoingActions.remove(ongoingAction.getActionId());
 
         // Send the email
         try {
-            sendEmail(recipient, generatedEmail.get().getTitle(), emailBody.toString());
-            return ActionResult.builder()
-                    .status(ActionResult.Status.SUCCESS)
-                    .summary("Email sent successfully")
-                    .result(prepareResult(recipient, generatedEmail.get().getTitle(), generatedEmail.get().getBody()))
-                    .build();
+            // Prepare the final body with reference ID
+            StringBuilder emailBody = new StringBuilder();
+            emailBody.append(body);
+            emailBody.append(String.format("\nref:%s", agent.getId()));
+
+            sendEmail(recipient, subject, emailBody.toString());
+
+            // Prepare the final result data
+            Map<String, String> result = new HashMap<>();
+            result.put("recipient", recipient);
+            result.put("subject", subject);
+            result.put("body", body);
+
+            return ActionResult.completed(result, "Email sent successfully to " + recipient);
         } catch (MessagingException e) {
             log.error("Failed to send email", e);
-            return ActionResult.builder()
-                    .status(ActionResult.Status.FAILURE)
-                    .summary("Failed to send email")
-                    .result(e.getMessage())
-                    .build();
+            return ActionResult.failed(e.getMessage(), "Failed to send email");
         }
     }
 
-    private Map<String, String> prepareResult(String recipient, String title, String body) {
-        Map<String, String> result = new HashMap<>();
-        result.put("recipient", recipient);
-        result.put("title", title);
-        result.put("body", body);
-        return result;
+    @Override
+    public ActionResult cancelAction(Agent agent, String actionId) {
+        ongoingActions.remove(actionId);
+        return ActionResult.failed("Email sending cancelled", "The email sending process was cancelled");
     }
 
     private void sendEmail(String recipient, String subject, String body) throws MessagingException {
@@ -167,7 +201,7 @@ public class SendEmailAction implements Action {
     }
 
     private Optional<EmailWriterResult> parseResult(BeanOutputParser<EmailWriterResult> outputParser, Generation response) {
-        if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getContent())) {
+        if (response == null || response.getOutput() == null || Strings.isBlank(response.getOutput().getContent())) {
             return Optional.empty();
         }
 
@@ -185,7 +219,7 @@ public class SendEmailAction implements Action {
         try {
             return Optional.of(outputParser.parse(content));
         } catch (Exception e) {
-            log.debug("Failed at parsing agent ouput, error: {}", e.getMessage());
+            log.debug("Failed at parsing agent output, error: {}", e.getMessage());
             return Optional.empty();
         }
     }

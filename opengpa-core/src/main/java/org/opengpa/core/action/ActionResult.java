@@ -54,18 +54,22 @@ public class ActionResult {
     private List<Document> documents = new ArrayList<>();
 
     // Helper methods for state management
+    @JsonIgnore
     public boolean isCompleted() {
         return status == Status.SUCCESS || status == Status.FAILURE;
     }
 
+    @JsonIgnore
     public boolean isAwaitingInput() {
         return status == Status.AWAITING_INPUT;
     }
 
+    @JsonIgnore
     public boolean isInProgress() {
         return status == Status.IN_PROGRESS;
     }
 
+    @JsonIgnore
     public boolean isFailed() {
         return status == Status.FAILURE;
     }

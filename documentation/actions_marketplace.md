@@ -9,8 +9,10 @@
 The following are built-in actions in `opengpa-core`.
 
 - **search_web** - Execute a web search with DuckDuckGo
-- **browse_web** - Browse the web with a headless browser.
-- **read_file** and **write_file** - Accessing the local workspace
+- **browse_web** - Browse the web with a headless browser
+- **read_file** and **write_file** - Access files in the local workspace
+- **analyze_picture** - Analyze an image with a multimodal LLM
+- **read_pdf** - Extract text from a PDF and query an LLM about its content
 
 ## Contributed
 

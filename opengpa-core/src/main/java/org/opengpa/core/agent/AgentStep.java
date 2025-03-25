@@ -35,18 +35,22 @@ public class AgentStep {
     boolean isFinal;
 
     // Helper methods for state checking
+    @JsonIgnore
     public boolean isCompleted() {
         return result != null && result.isCompleted();
     }
 
+    @JsonIgnore
     public boolean isAwaitingInput() {
         return result != null && result.isAwaitingInput();
     }
 
+    @JsonIgnore
     public boolean isInProgress() {
         return result != null && result.isInProgress();
     }
 
+    @JsonIgnore
     public boolean needsContinuation() {
         return result != null && !result.isCompleted() && !result.isFailed();
     }

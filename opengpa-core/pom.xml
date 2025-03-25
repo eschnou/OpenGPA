@@ -125,6 +125,13 @@
             <version>0.17.1</version>
         </dependency>
 
+        <!-- PDF Processing -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.24</version>
+        </dependency>
+
         <!-- Parsing -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

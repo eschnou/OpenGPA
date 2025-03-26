@@ -9,6 +9,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix = "opengpa.actions.email", name = "enabled", havingValue = "true", matchIfMissing = false)
-public class SendEmailAction implements Action {
+public class SendEmailAction extends LegacyActionAdapter {
 
     public static final String ACTION_NAME = "send_email";
 
@@ -80,12 +81,7 @@ public class SendEmailAction implements Action {
     }
 
     @Override
-    public boolean supportsStatefulExecution() {
-        return true;
-    }
-
-    @Override
-    public ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> input, Map<String, String> context) {
         String recipient = input.get("recipient");
         String request = input.get("content");
 

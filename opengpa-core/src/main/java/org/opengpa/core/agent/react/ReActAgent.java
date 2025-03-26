@@ -1,7 +1,9 @@
 package org.opengpa.core.agent.react;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.opengpa.core.action.JsonSchemaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -325,14 +327,14 @@ public class ReActAgent implements Agent {
         List<ActionDTO> actionsMap = new ArrayList<>();
 
         for (Action action : actions) {
-            ActionDTO actionDTO = ActionDTO.builder()
+            // Build action representation with both legacy parameters and JSON schema
+            ActionDTO.ActionDTOBuilder builder = ActionDTO.builder()
                     .name(action.getName())
                     .description(action.getDescription())
-                    .parameters(action.getParameters())
-                    .data(action.getData(context))
-                    .build();
-
-            actionsMap.add(actionDTO);
+                    .parameters(action.getJsonSchema())
+                    .data(action.getData(context));
+            
+            actionsMap.add(builder.build());
         }
 
         try {
@@ -368,7 +370,27 @@ public class ReActAgent implements Agent {
             ActionInvocation action = output.getAction();
             Optional<Action> matchingAction = availableActions.stream().filter(a -> a.getName().equals(action.getName())).findFirst();
             if (matchingAction.isPresent()) {
-                return matchingAction.get().apply(this, action.getParameters(), context);
+                Action actionToExecute = matchingAction.get();
+                
+                // Validate input against JSON schema if available
+                JsonNode schema = actionToExecute.getJsonSchema();
+                if (schema != null) {
+                    List<String> validationErrors = JsonSchemaUtils.validateAgainstSchema(schema, action.getParameters());
+                    if (!validationErrors.isEmpty()) {
+                        // Return validation error to the agent
+                        StringBuilder errorBuilder = new StringBuilder("Invalid input parameters:\n");
+                        for (String error : validationErrors) {
+                            errorBuilder.append("- ").append(error).append("\n");
+                        }
+                        
+                        return ActionResult.failed(
+                                errorBuilder.toString(),
+                                "Input parameters failed schema validation"
+                        );
+                    }
+                }
+                
+                return actionToExecute.apply(this, action.getParameters(), context);
             } else {
                 return ActionResult.failed(
                         String.format("The action '%s' does not exist, use only action available to you.", action.getName()),

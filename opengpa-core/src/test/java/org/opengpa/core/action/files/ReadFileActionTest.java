@@ -55,7 +55,7 @@ class ReadFileActionTest {
         String agentId = "agent1";
         String filename = "test.txt";
         String fileContent = "This is a test file.";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("filename", filename);
 
         when(agent.getId()).thenReturn(agentId);
@@ -77,7 +77,7 @@ class ReadFileActionTest {
     void testApplyWithNonExistingFile() {
         String agentId = "agent1";
         String filename = "nonexistent.txt";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("filename", filename);
 
         when(agent.getId()).thenReturn(agentId);
@@ -97,7 +97,7 @@ class ReadFileActionTest {
     @Test
     void testApplyWithMissingFilename() {
         String agentId = "agent1";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
 
         when(agent.getId()).thenReturn(agentId);
 

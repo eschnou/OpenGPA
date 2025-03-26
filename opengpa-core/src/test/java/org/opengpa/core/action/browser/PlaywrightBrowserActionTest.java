@@ -97,7 +97,7 @@ class PlaywrightBrowserActionTest {
     void testApplyWithValidInput() {
         String url = "http://example.com";
         String query = "What is this page about?";
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         input.put("url", url);
         input.put("query", query);
 
@@ -122,7 +122,7 @@ class PlaywrightBrowserActionTest {
 
     @Test
     void testApplyWithMissingUrl() {
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         input.put("query", "What is this page about?");
 
         ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
@@ -134,7 +134,7 @@ class PlaywrightBrowserActionTest {
 
     @Test
     void testApplyWithEmptyUrl() {
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         input.put("url", "");
         input.put("query", "What is this page about?");
 
@@ -149,7 +149,7 @@ class PlaywrightBrowserActionTest {
     void testApplyWithBrowsingException() {
         String url = "http://example.com";
         String query = "What is this page about?";
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         input.put("url", url);
         input.put("query", query);
 

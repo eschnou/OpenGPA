@@ -73,7 +73,7 @@ class RawBrowserActionTest {
     void testApplyWithValidUrl() {
         String url = "http://example.com";
         String content = "<html><body>Example content</body></html>";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("url", url);
 
         when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.just(content));
@@ -89,7 +89,7 @@ class RawBrowserActionTest {
 
     @Test
     void testApplyWithMissingUrl() {
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
 
         ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
 
@@ -100,7 +100,7 @@ class RawBrowserActionTest {
 
     @Test
     void testApplyWithEmptyUrl() {
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("url", "");
 
         ActionResult result = rawBrowserAction.apply(agent, request, Collections.emptyMap());
@@ -113,7 +113,7 @@ class RawBrowserActionTest {
     @Test
     void testApplyWithWebClientResponseException() {
         String url = "http://example.com";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("url", url);
 
         when(webClient.get()).thenReturn(requestHeadersUriSpec);
@@ -131,7 +131,7 @@ class RawBrowserActionTest {
     @Test
     void testApplyWithUnexpectedException() {
         String url = "http://example.com";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("url", url);
 
         when(webClient.get()).thenReturn(requestHeadersUriSpec);

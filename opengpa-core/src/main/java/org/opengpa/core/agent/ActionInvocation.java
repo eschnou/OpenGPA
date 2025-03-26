@@ -12,5 +12,5 @@ import java.util.Map;
 @Builder
 public class ActionInvocation {
         private String name;
-        private Map<String, String> parameters;
+        private Map<String, Object> parameters;
     }

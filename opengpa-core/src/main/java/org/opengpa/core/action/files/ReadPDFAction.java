@@ -6,6 +6,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix="opengpa.actions.files", name="enabled", havingValue = "true", matchIfMissing = false)
-public class ReadPDFAction implements Action {
+public class ReadPDFAction extends LegacyActionAdapter {
 
     public static final String ACTION_NAME = "readPDF";
     private final ChatModel chatModel;
@@ -57,7 +58,7 @@ public class ReadPDFAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> request, Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request, Map<String, String> context) {
         String filename = request.get("file");
         String query = request.get("query");
         

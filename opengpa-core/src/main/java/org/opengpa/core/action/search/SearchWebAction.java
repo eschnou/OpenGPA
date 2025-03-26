@@ -10,6 +10,7 @@ import org.jsoup.select.Elements;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.action.files.ReadFileAction;
 import org.opengpa.core.agent.Agent;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 @Component
 @ConditionalOnProperty(prefix="opengpa.actions", name="search", havingValue = "duckduckgo", matchIfMissing = true)
-public class SearchWebAction implements Action {
+public class SearchWebAction extends LegacyActionAdapter {
 
     public static final String ACTION_NAME = "search_web";
 
@@ -59,7 +60,7 @@ public class SearchWebAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Searching web with query {}", request.get("query"));
 
         String query = request.get("query");

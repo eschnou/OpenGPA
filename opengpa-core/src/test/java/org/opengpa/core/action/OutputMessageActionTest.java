@@ -47,7 +47,7 @@ class OutputMessageActionTest {
 
     @Test
     void testApply() {
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         String testMessage = "Test message";
         input.put("message", testMessage);
 
@@ -60,7 +60,7 @@ class OutputMessageActionTest {
 
     @Test
     void testApplyWithEmptyMessage() {
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         input.put("message", "");
 
         ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());
@@ -72,7 +72,7 @@ class OutputMessageActionTest {
 
     @Test
     void testApplyWithNullMessage() {
-        Map<String, String> input = new HashMap<>();
+        Map<String, Object> input = new HashMap<>();
         input.put("message", null);
 
         ActionResult result = outputMessageAction.apply(mockAgent, input, Collections.emptyMap());

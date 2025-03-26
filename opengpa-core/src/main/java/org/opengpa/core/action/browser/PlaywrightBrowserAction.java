@@ -10,8 +10,10 @@ import org.jsoup.nodes.Document;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.config.PlaywrightConfig;
+import org.opengpa.core.util.InputSanitizer;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -34,7 +36,7 @@ import java.util.Map;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix = "opengpa.actions", name = "browse", havingValue = "playwright", matchIfMissing = false)
-public class PlaywrightBrowserAction implements Action {
+public class PlaywrightBrowserAction extends LegacyActionAdapter {
 
     public static final String BROWSER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (K HTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
 
@@ -93,7 +95,7 @@ public class PlaywrightBrowserAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> input,  Map<String, String> context) {
         log.debug("Fetching url {} for agent {}", input.get("url"), agent.getId());
 
         String url = input.get("url");
@@ -118,7 +120,7 @@ public class PlaywrightBrowserAction implements Action {
         navigateOptions.setWaitUntil(WaitUntilState.DOMCONTENTLOADED);
 
         page.navigate(url, navigateOptions);
-        String title = page.title();
+        String title = InputSanitizer.sanitize(page.title());
         String content = page.content();
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -160,5 +162,4 @@ public class PlaywrightBrowserAction implements Action {
             return "";
         }
     }
-
 }

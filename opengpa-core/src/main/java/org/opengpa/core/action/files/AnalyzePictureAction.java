@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix="opengpa.actions.files", name="enabled", havingValue = "true", matchIfMissing = false)
-public class AnalyzePictureAction implements Action {
+public class AnalyzePictureAction extends LegacyActionAdapter {
 
     public static final String ACTION_NAME = "analyzePicture";
     private final ChatModel chatModel;
@@ -57,7 +58,7 @@ public class AnalyzePictureAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> request, Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request, Map<String, String> context) {
         String filename = request.get("filename");
         String query = request.get("query");
         

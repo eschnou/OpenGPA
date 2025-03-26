@@ -50,92 +50,25 @@ public class TTSAction implements Action {
 
     @Override
     public JsonNode getJsonSchema() {
-        ObjectNode schema = objectMapper.createObjectNode();
-        schema.put("type", "object");
-        schema.put("title", "Text to Speech Parameters");
-        schema.put("description", "Parameters for generating speech from text with multiple voices");
-        
-        ObjectNode properties = objectMapper.createObjectNode();
-        
-        // Name property
-        ObjectNode nameProperty = objectMapper.createObjectNode();
-        nameProperty.put("type", "string");
-        nameProperty.put("description", "A filename for the rendered output, the extension mp3 will be added automatically.");
-        properties.set("name", nameProperty);
-        
-        // Script property (array of voice/text pairs)
-        ObjectNode scriptProperty = objectMapper.createObjectNode();
-        scriptProperty.put("type", "array");
-        scriptProperty.put("description", "Array of script entries with voice and text");
-        
-        // Script item properties
-        ObjectNode scriptItemProperties = objectMapper.createObjectNode();
-        
-        ObjectNode voiceProperty = objectMapper.createObjectNode();
-        voiceProperty.put("type", "string");
-        voiceProperty.put("description", "The voice to use for this segment");
-        
-        ArrayNode voiceEnum = objectMapper.createArrayNode();
-        voiceEnum.add("alloy");
-        voiceEnum.add("echo");
-        voiceEnum.add("fable");
-        voiceEnum.add("onyx");
-        voiceEnum.add("nova");
-        voiceEnum.add("shimmer");
-        voiceProperty.set("enum", voiceEnum);
-        
-        ObjectNode textProperty = objectMapper.createObjectNode();
-        textProperty.put("type", "string");
-        textProperty.put("description", "The text to synthesize for this voice");
-        
-        scriptItemProperties.set("voice", voiceProperty);
-        scriptItemProperties.set("text", textProperty);
-        
-        ObjectNode scriptItems = objectMapper.createObjectNode();
-        scriptItems.put("type", "object");
-        scriptItems.set("properties", scriptItemProperties);
-        
-        ArrayNode scriptItemsRequired = objectMapper.createArrayNode();
-        scriptItemsRequired.add("voice");
-        scriptItemsRequired.add("text");
-        scriptItems.set("required", scriptItemsRequired);
-        
-        scriptProperty.set("items", scriptItems);
-        properties.set("script", scriptProperty);
-        
-        schema.set("properties", properties);
-        
-        ArrayNode required = objectMapper.createArrayNode();
-        required.add("name");
-        schema.set("required", required);
-        
-        return schema;
+        return org.opengpa.core.action.JsonSchemaUtils.generateSchemaFromClass(TTSInput.class);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public ActionResult apply(Agent agent, Map<String, Object> input, Map<String, String> context) {
-        String filename = (String) input.get("name");
-        List<TTSScriptEntry> scriptEntries;
-        
-        // Handle both the new script array and backward compatibility with old string parameters
-        if (input.containsKey("script")) {
-            Object scriptObj = input.get("script");
-            if (scriptObj instanceof List) {
-                scriptEntries = parseScriptEntries((List<Map<String, Object>>) scriptObj);
-            } else {
-                return ActionResult.builder()
-                        .status(ActionResult.Status.FAILURE)
-                        .result("Invalid script format. Expected an array of voice/text entries.")
-                        .build();
-            }
-        } else {
+        TTSInput ttsInput;
+        try {
+            ttsInput = objectMapper.convertValue(input, TTSInput.class);
+        } catch (Exception e) {
             return ActionResult.builder()
                     .status(ActionResult.Status.FAILURE)
-                    .result("Missing required parameters: either 'script' array or both 'input' and 'voice'")
+                    .result("Error parsing input parameters: " + e.getMessage())
                     .build();
         }
-        
+
+        List<TTSScriptEntry> scriptEntries = ttsInput.getScript();
+        String filename = ttsInput.getName();
+
         try {
             byte[] audioData = generateMultiVoiceAudio(scriptEntries);
             
@@ -162,23 +95,6 @@ public class TTSAction implements Action {
                     .result("Error generating text-to-speech audio: " + e.getMessage())
                     .build();
         }
-    }
-
-    private List<TTSScriptEntry> parseScriptEntries(List<Map<String, Object>> scriptData) {
-        List<TTSScriptEntry> entries = new ArrayList<>();
-        
-        for (Map<String, Object> entry : scriptData) {
-            String voice = (String) entry.get("voice");
-            String text = (String) entry.get("text");
-            
-            if (voice != null && text != null) {
-                entries.add(new TTSScriptEntry(voice, text));
-            } else {
-                log.warn("Skipping invalid script entry: {}", entry);
-            }
-        }
-        
-        return entries;
     }
 
     private byte[] generateMultiVoiceAudio(List<TTSScriptEntry> scriptEntries) throws IOException {

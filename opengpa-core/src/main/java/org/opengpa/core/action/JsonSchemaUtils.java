@@ -2,6 +2,7 @@ package org.opengpa.core.action;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
@@ -11,10 +12,7 @@ import com.networknt.schema.ValidationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Utility class for working with JSON schema in the context of Actions
@@ -65,7 +63,9 @@ public class JsonSchemaUtils {
     public static JsonNode generateSchemaFromClass(Class<?> clazz) {
         try {
             JsonSchema schema = schemaGenerator.generateSchema(clazz);
-            return mapper.valueToTree(schema);
+            JsonNode schemaNode = mapper.valueToTree(schema);
+            removeIdFields(schemaNode);
+            return schemaNode;
         } catch (Exception e) {
             throw new RuntimeException("Error generating JSON schema", e);
         }
@@ -114,5 +114,23 @@ public class JsonSchemaUtils {
      */
     public static boolean isValid(JsonNode schema, Map<String, Object> input) {
         return validateAgainstSchema(schema, input).isEmpty();
+    }
+
+    private static void removeIdFields(JsonNode node) {
+        if (node.isObject()) {
+            ObjectNode objectNode = (ObjectNode) node;
+            objectNode.remove("id");
+
+            // Process all child nodes
+            Iterator<Map.Entry<String, JsonNode>> fields = objectNode.fields();
+            while (fields.hasNext()) {
+                removeIdFields(fields.next().getValue());
+            }
+        } else if (node.isArray()) {
+            ArrayNode arrayNode = (ArrayNode) node;
+            for (JsonNode element : arrayNode) {
+                removeIdFields(element);
+            }
+        }
     }
 }

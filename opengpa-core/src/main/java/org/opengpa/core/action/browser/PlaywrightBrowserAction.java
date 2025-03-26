@@ -135,7 +135,7 @@ public class PlaywrightBrowserAction extends LegacyActionAdapter {
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
                 .result(response.getOutput().getContent())
-                .summary(String.format("Processed webpage '" +  title + "' from " + getHostFromUrl(url)))
+                .summary(String.format("Processed webpage %s from %s.", title, getHostFromUrl(url)))
                 .build();
     }
 

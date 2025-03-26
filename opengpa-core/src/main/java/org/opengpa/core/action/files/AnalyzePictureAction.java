@@ -33,6 +33,16 @@ public class AnalyzePictureAction extends LegacyActionAdapter {
     private final ChatModel chatModel;
     private final Workspace workspace;
 
+    private static final String PROMPT = """
+            An image is attached. Using this image, try to answer the user request below. If you cannot answer the question, explain
+            what information is missing. In addition, always report a detailed description of what the image is about and its content.
+            Use markdown to structure your output.
+            
+            Query: %s
+            Content:
+           
+            """;
+
     public AnalyzePictureAction(ChatModel chatModel, Workspace workspace) {
         log.info("Creating AnalyzePictureAction");
         this.chatModel = chatModel;
@@ -84,9 +94,14 @@ public class AnalyzePictureAction extends LegacyActionAdapter {
             
             // Create media content with the resource
             Media imageMedia = new Media(mimeType, imageResource);
-            
+
+            // Prepare the user message
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(String.format(PROMPT, query));
+            String prompt = stringBuilder.toString();
+
             // Create a multimodal message with the query and image
-            Message userMessage = new UserMessage(query, imageMedia);
+            Message userMessage = new UserMessage(prompt, imageMedia);
             
             // Call the LLM with the image and query
             Generation response = chatModel.call(new Prompt(List.of(userMessage))).getResult();

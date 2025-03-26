@@ -33,6 +33,24 @@ public class ReadPDFAction extends LegacyActionAdapter {
     private final ChatModel chatModel;
     private final Workspace workspace;
 
+    private static final String PROMPT = """
+            The following is a PDF file content. Using this content, try to answer the question below. 
+            
+            In addition, also provide:
+             - all metadata from the document such as title, author, organization, date, etc...
+             - a summary of the document
+             - any relevant http links that are present in the document
+             
+             Use markdown to structure your output.
+            
+            Question: 
+            %s
+            
+            Content: 
+            %s
+           
+            """;
+
     public ReadPDFAction(ChatModel chatModel, Workspace workspace) {
         log.info("Creating ReadPDFAction");
         this.chatModel = chatModel;
@@ -99,9 +117,7 @@ public class ReadPDFAction extends LegacyActionAdapter {
             
             // Prepare context for LLM with the PDF content and query
             String promptText = String.format(
-                    "Below is the text content extracted from a PDF file. Please answer the following question about this content:\n\n" +
-                    "Question: %s\n\n" +
-                    "PDF Content:\n%s",
+                    PROMPT,
                     query, 
                     extractedText
             );

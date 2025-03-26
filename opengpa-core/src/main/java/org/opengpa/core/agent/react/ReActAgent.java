@@ -150,30 +150,57 @@ public class ReActAgent implements Agent {
         // Query the LLM (our 'brain') to decide on next action
         Generation response = chatModel.call(prompt).getResult();
 
-        ReActAgentOutput agentOutput = parseNextAction(outputParser, response);
-        logInteraction(systemMessage, userMessage, response.getOutput().getContent());
+        AgentStep step;
+        try {
+            ReActAgentOutput agentOutput = parseNextAction(outputParser, response);
+            logInteraction(systemMessage, userMessage, response.getOutput().getContent());
 
-        // Execute the action requested by the LLM
-        ActionResult result = executeAction(agentOutput);
+            // Execute the action requested by the LLM
+            ActionResult result = executeAction(agentOutput);
 
-        AgentStep step = AgentStep
+            step = AgentStep
+                    .builder()
+                    .input(userInput)
+                    .context(context)
+                    .result(result)
+                    .action(agentOutput.getAction())
+                    .isFinal(agentOutput.isFinal())
+                    .reasoning(agentOutput.getReasoning())
+                    .build();
+
+            // If the action is not completed, store it for potential continuation
+            if (step.needsContinuation()) {
+                ongoingActions.put(result.getActionId(), step);
+            }
+        } catch (IllegalArgumentException e) {
+            step = errorStep(userInput, context, e);
+        }
+
+        executedSteps.add(step);
+        return step;
+    }
+
+    private AgentStep errorStep(String userInput, Map<String, String> context, IllegalArgumentException e) {
+        ActionResult errorResult = ActionResult.failed(
+                "Agent failed at invoking an action with error: " + e.getMessage(),
+                "The agent failed at invoking an action.");
+
+        ActionInvocation actionInvocation = ActionInvocation.builder()
+                .name("outputMessage")
+                .parameters(Map.of(
+                        "message", "The agent failed at invoking an action and will try again."
+                ))
+                .build();
+
+        return AgentStep
                 .builder()
                 .input(userInput)
                 .context(context)
-                .result(result)
-                .action(agentOutput.getAction())
-                .isFinal(agentOutput.isFinal())
-                .reasoning(agentOutput.getReasoning())
+                .result(errorResult)
+                .action(actionInvocation)
+                .isFinal(false)
+                .reasoning("")
                 .build();
-
-        executedSteps.add(step);
-
-        // If the action is not completed, store it for potential continuation
-        if (step.needsContinuation()) {
-            ongoingActions.put(result.getActionId(), step);
-        }
-
-        return step;
     }
 
     /**
@@ -277,7 +304,7 @@ public class ReActAgent implements Agent {
 
     private ReActAgentOutput parseNextAction(BeanOutputParser<ReActAgentOutput> outputParser, Generation response) {
         if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getContent())) {
-            return emptyAction("");
+            throw new IllegalArgumentException("Invoked action is null or empty");
         }
 
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
@@ -294,22 +321,9 @@ public class ReActAgent implements Agent {
         try {
             return outputParser.parse(content);
         } catch (Exception e) {
-            log.debug("Failed at parsing agent ouput, error: {}", e.getMessage());
-            return emptyAction(response.getOutput().getContent());
+            log.debug("Failed at parsing agent output, error: {}", e.getMessage());
+            throw new IllegalArgumentException("Failed to parse agent output", e);
         }
-    }
-
-    private ReActAgentOutput emptyAction(String content) {
-        return ReActAgentOutput.builder()
-                .action(ActionInvocation.builder()
-                        .name("outputMessage")
-                        .parameters(Map.of(
-                                "message", content
-                        ))
-                        .build())
-                .reasoning("The agent failed at invoking an action, here is the raw output.")
-                .isFinal(false)
-                .build();
     }
 
     @VisibleForTesting

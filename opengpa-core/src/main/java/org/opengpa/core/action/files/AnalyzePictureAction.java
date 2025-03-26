@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
@@ -26,11 +27,21 @@ import java.util.Optional;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix="opengpa.actions.files", name="enabled", havingValue = "true", matchIfMissing = false)
-public class AnalyzePictureAction implements Action {
+public class AnalyzePictureAction extends LegacyActionAdapter {
 
     public static final String ACTION_NAME = "analyzePicture";
     private final ChatModel chatModel;
     private final Workspace workspace;
+
+    private static final String PROMPT = """
+            An image is attached. Using this image, try to answer the user request below. If you cannot answer the question, explain
+            what information is missing. In addition, always report a detailed description of what the image is about and its content.
+            Use markdown to structure your output.
+            
+            Query: %s
+            Content:
+           
+            """;
 
     public AnalyzePictureAction(ChatModel chatModel, Workspace workspace) {
         log.info("Creating AnalyzePictureAction");
@@ -57,7 +68,7 @@ public class AnalyzePictureAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> request, Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request, Map<String, String> context) {
         String filename = request.get("filename");
         String query = request.get("query");
         
@@ -83,9 +94,14 @@ public class AnalyzePictureAction implements Action {
             
             // Create media content with the resource
             Media imageMedia = new Media(mimeType, imageResource);
-            
+
+            // Prepare the user message
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(String.format(PROMPT, query));
+            String prompt = stringBuilder.toString();
+
             // Create a multimodal message with the query and image
-            Message userMessage = new UserMessage(query, imageMedia);
+            Message userMessage = new UserMessage(prompt, imageMedia);
             
             // Call the LLM with the image and query
             Generation response = chatModel.call(new Prompt(List.of(userMessage))).getResult();

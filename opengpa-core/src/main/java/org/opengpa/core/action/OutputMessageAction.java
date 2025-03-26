@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class OutputMessageAction implements Action {
+public class OutputMessageAction extends LegacyActionAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(OutputMessageAction.class);
     public static final String NAME = "output_message";
@@ -37,7 +37,7 @@ public class OutputMessageAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> input, Map<String, String> context) {
         log.debug("Outputmessage action message={}", input.get("message"));
 
         String message = input.get("message");

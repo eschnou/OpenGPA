@@ -63,7 +63,7 @@ class WriteFileActionTest {
         String agentId = "agent1";
         String filename = "test.txt";
         String fileContent = "This is a test file.";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("filename", filename);
         request.put("body", fileContent);
 
@@ -87,7 +87,7 @@ class WriteFileActionTest {
     void testApplyWithMissingFilename() {
         String agentId = "agent1";
         String fileContent = "This is a test file.";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("body", fileContent);
 
         when(agent.getId()).thenReturn(agentId);
@@ -103,7 +103,7 @@ class WriteFileActionTest {
     void testApplyWithMissingBody() {
         String agentId = "agent1";
         String filename = "test.txt";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("filename", filename);
 
         when(agent.getId()).thenReturn(agentId);
@@ -118,7 +118,7 @@ class WriteFileActionTest {
         String agentId = "agent1";
         String filename = "test.txt";
         String fileContent = "";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("filename", filename);
         request.put("body", fileContent);
 

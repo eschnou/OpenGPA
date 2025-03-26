@@ -9,7 +9,7 @@ public class ActionDTO {
 
     private String name;
 
-    private Map<String, String> parameters;
+    private Map<String, Object> parameters;
 
     String reasoning;
 

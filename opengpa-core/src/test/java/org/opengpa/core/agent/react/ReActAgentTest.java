@@ -29,19 +29,33 @@ class ReActAgentTest {
         Assertions.assertEquals("[ {\n" +
                 "  \"name\" : \"browse_web\",\n" +
                 "  \"description\" : \"Fetch the raw html content at a given url.\",\n" +
-                "  \"parameters\" : [ {\n" +
-                "    \"name\" : \"url\",\n" +
-                "    \"description\" : \"The url of the page to load.\"\n" +
-                "  } ],\n" +
-                "  \"data\" : { }\n" +
+                "  \"data\" : { },\n" +
+                "  \"parameters\" : {\n" +
+                "    \"type\" : \"object\",\n" +
+                "    \"title\" : \"Raw Browser Parameters\",\n" +
+                "    \"properties\" : {\n" +
+                "      \"url\" : {\n" +
+                "        \"type\" : \"string\",\n" +
+                "        \"description\" : \"The url of the page to load.\"\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"required\" : [ \"url\" ]\n" +
+                "  }\n" +
                 "}, {\n" +
                 "  \"name\" : \"search_web\",\n" +
                 "  \"description\" : \"Search the web with the given query.\",\n" +
-                "  \"parameters\" : [ {\n" +
-                "    \"name\" : \"query\",\n" +
-                "    \"description\" : \"The query to pass to the web search engine.\"\n" +
-                "  } ],\n" +
-                "  \"data\" : { }\n" +
+                "  \"data\" : { },\n" +
+                "  \"parameters\" : {\n" +
+                "    \"type\" : \"object\",\n" +
+                "    \"title\" : \"Action Parameters\",\n" +
+                "    \"properties\" : {\n" +
+                "      \"query\" : {\n" +
+                "        \"type\" : \"string\",\n" +
+                "        \"description\" : \"The query to pass to the web search engine.\"\n" +
+                "      }\n" +
+                "    },\n" +
+                "    \"required\" : [ \"query\" ]\n" +
+                "  }\n" +
                 "} ]", result);
     }
 

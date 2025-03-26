@@ -62,7 +62,7 @@ class ReadPDFActionTest {
         String filename = "nonexistent.pdf";
         String query = "What is this document about?";
         
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("file", filename);
         request.put("query", query);
 
@@ -91,7 +91,7 @@ class ReadPDFActionTest {
         String filename = "document.txt";
         String query = "What is this document about?";
         
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("file", filename);
         request.put("query", query);
 

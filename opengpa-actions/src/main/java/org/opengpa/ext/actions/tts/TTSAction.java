@@ -1,8 +1,11 @@
 package org.opengpa.ext.actions.tts;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.opengpa.core.action.Action;
-import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
@@ -15,10 +18,9 @@ import org.springframework.ai.openai.audio.speech.SpeechResponse;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -27,8 +29,8 @@ public class TTSAction implements Action {
 
     public static final String ACTION_NAME = "text_to_speech";
     private final SpeechModel speechModel;
-
     private final Workspace workspace;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public TTSAction(SpeechModel speechModel, Workspace workspace) {
         log.info("Creating TTSAction");
@@ -43,48 +45,87 @@ public class TTSAction implements Action {
 
     @Override
     public String getDescription() {
-        return "Render a mp3 file based on a text content and a voice";
+        return "Generate an MP3 file with speech from a script with multiple voices";
     }
 
     @Override
-    public List<ActionParameter> getParameters() {
-        return List.of(
-                ActionParameter.from("input", "The text to generate audio for."),
-                ActionParameter.from("name", "A filename for the rendered output, the extension mp3 will be added automatically."),
-                ActionParameter.from("voice", "The voice to use when generating the audio. Supported voices are alloy, echo, fable, onyx, nova, and shimmer.")
-        );
+    public JsonNode getJsonSchema() {
+        return org.opengpa.core.action.JsonSchemaUtils.generateSchemaFromClass(TTSInput.class);
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context) {
-        OpenAiAudioSpeechOptions speechOptions = OpenAiAudioSpeechOptions.builder()
-                .withModel("tts-1")
-                .withVoice(getVoiceFromInput(input.get("voice")))
-                .withResponseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
-                .withSpeed(1.0f)
-                .build();
+    @SuppressWarnings("unchecked")
+    public ActionResult apply(Agent agent, Map<String, Object> input, Map<String, String> context) {
+        TTSInput ttsInput;
+        try {
+            ttsInput = objectMapper.convertValue(input, TTSInput.class);
+        } catch (Exception e) {
+            return ActionResult.builder()
+                    .status(ActionResult.Status.FAILURE)
+                    .result("Error parsing input parameters: " + e.getMessage())
+                    .build();
+        }
 
-        SpeechPrompt speechPrompt = new SpeechPrompt(input.get("input"), speechOptions);
-        SpeechResponse response = speechModel.call(speechPrompt);
+        List<TTSScriptEntry> scriptEntries = ttsInput.getScript();
+        String filename = ttsInput.getName();
 
-        Map<String, String> metadataStringMap = response.getMetadata().entrySet().stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> String.valueOf(e.getValue())));
+        try {
+            byte[] audioData = generateMultiVoiceAudio(scriptEntries);
+            
+            // Create metadata
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("format", "mp3");
+            metadata.put("segments", String.valueOf(scriptEntries.size()));
+            
+            // Add the document to the workspace
+            String fullFilename = filename + ".mp3";
+            Document document = workspace.addDocument(agent.getId(), fullFilename, audioData, metadata);
+            
+            return ActionResult.builder()
+                    .status(ActionResult.Status.SUCCESS)
+                    .summary(String.format("Multi-voice text-to-speech completed successfully and saved to %s in the workspace.", fullFilename))
+                    .result(String.format("Audio file generated with %d voice segments and saved to %s in the workspace.", 
+                            scriptEntries.size(), fullFilename))
+                    .documents(Collections.singletonList(document))
+                    .build();
+        } catch (Exception e) {
+            log.error("Error generating text-to-speech audio", e);
+            return ActionResult.builder()
+                    .status(ActionResult.Status.FAILURE)
+                    .result("Error generating text-to-speech audio: " + e.getMessage())
+                    .build();
+        }
+    }
 
-        byte[] responseAsBytes = response.getResult().getOutput();
-        String filename = input.get("name") + ".mp3";
+    private byte[] generateMultiVoiceAudio(List<TTSScriptEntry> scriptEntries) throws IOException {
+        if (scriptEntries.isEmpty()) {
+            throw new IllegalArgumentException("Script cannot be empty");
+        }
+        
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        
+        for (int i = 0; i < scriptEntries.size(); i++) {
+            log.debug("Generating multi-voice audio entry {}/{}.", i, scriptEntries.size());
 
-        Document document = workspace.addDocument(agent.getId(), filename, responseAsBytes, metadataStringMap);
+            TTSScriptEntry entry = scriptEntries.get(i);
+            OpenAiAudioSpeechOptions speechOptions = OpenAiAudioSpeechOptions.builder()
+                    .withModel("tts-1")
+                    .withVoice(getVoiceFromInput(entry.getVoice()))
+                    .withResponseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
+                    .withSpeed(1.0f)
+                    .build();
 
-        return ActionResult.builder()
-                .status(ActionResult.Status.SUCCESS)
-                .summary(String.format("Text-to-speech rendering completed successfully and saved to %s in the workspace.", filename))
-                .result(String.format("Audio file generated and saved to %s in the workspace.", filename))
-                .documents(Arrays.asList(document))
-                .build();
+            SpeechPrompt speechPrompt = new SpeechPrompt(entry.getText(), speechOptions);
+            SpeechResponse response = speechModel.call(speechPrompt);
+            
+            byte[] audioSegment = response.getResult().getOutput();
+            outputStream.write(audioSegment);
+        }
+        
+        return outputStream.toByteArray();
     }
 
     private OpenAiAudioApi.SpeechRequest.Voice getVoiceFromInput(String voice) {
-
         switch (voice.toLowerCase()) {
             case "alloy":
                 return OpenAiAudioApi.SpeechRequest.Voice.ALLOY;
@@ -99,7 +140,7 @@ public class TTSAction implements Action {
             case "shimmer":
                 return OpenAiAudioApi.SpeechRequest.Voice.SHIMMER;
             default:
-                log.debug("Unsupported voice type: {}", voice);
+                log.debug("Unsupported voice type: {}, using ALLOY instead", voice);
                 return OpenAiAudioApi.SpeechRequest.Voice.ALLOY;
         }
     }

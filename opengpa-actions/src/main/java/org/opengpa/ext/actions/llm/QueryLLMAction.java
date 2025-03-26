@@ -3,6 +3,7 @@ package org.opengpa.ext.actions.llm;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.action.files.ReadFileAction;
 import org.opengpa.core.agent.Agent;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @Component
 @ConditionalOnProperty(prefix="opengpa.actions.llm", name="enabled", havingValue = "true", matchIfMissing = false)
-public class QueryLLMAction implements Action {
+public class QueryLLMAction extends LegacyActionAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);
 
@@ -46,7 +47,7 @@ public class QueryLLMAction implements Action {
         );
     }
 
-    public ActionResult apply(Agent agent, Map<String, String> request, Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request, Map<String, String> context) {
         log.debug("Querying LLM with prompt={}", request.get("prompt"));
 
         String prompt = request.get("prompt");

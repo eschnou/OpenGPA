@@ -6,11 +6,12 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.config.PlaywrightConfig;
+import org.opengpa.core.util.InputSanitizer;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -25,7 +26,7 @@ import java.util.Map;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix = "opengpa.actions", name = "browse", havingValue = "playwright", matchIfMissing = false)
-public class PlaywrightBrowserAction implements Action {
+public class PlaywrightBrowserAction extends LegacyActionAdapter {
 
     public static final String BROWSER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (K HTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36";
 
@@ -84,7 +85,7 @@ public class PlaywrightBrowserAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> input,  Map<String, String> context) {
         log.debug("Fetching url {} for agent {}", input.get("url"), agent.getId());
 
         String url = input.get("url");
@@ -109,7 +110,7 @@ public class PlaywrightBrowserAction implements Action {
         navigateOptions.setWaitUntil(WaitUntilState.DOMCONTENTLOADED);
 
         page.navigate(url, navigateOptions);
-        String title = page.title();
+        String title = InputSanitizer.sanitize(page.title());
         String content = page.content();
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -124,7 +125,7 @@ public class PlaywrightBrowserAction implements Action {
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
                 .result(response.getOutput().getText())
-                .summary(String.format("Processed webpage '" +  title + "' from " + getHostFromUrl(url)))
+                .summary(String.format("Processed webpage %s from %s.", title, getHostFromUrl(url)))
                 .build();
     }
 
@@ -151,5 +152,4 @@ public class PlaywrightBrowserAction implements Action {
             return "";
         }
     }
-
 }

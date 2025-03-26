@@ -1,12 +1,14 @@
 package org.opengpa.core.agent.react;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.JsonSchemaUtils;
 import org.opengpa.core.agent.ActionInvocation;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.agent.AgentStep;
@@ -152,30 +154,57 @@ public class ReActAgent implements Agent {
         // Query the LLM (our 'brain') to decide on next action
         Generation response = chatModel.call(prompt).getResult();
 
-        ReActAgentOutput agentOutput = parseNextAction(outputConverter, response);
-        logInteraction(systemMessage, userMessage, response.getOutput().getText());
+        AgentStep step;
+        try {
+            ReActAgentOutput agentOutput = parseNextAction(outputConverter, response);
+            logInteraction(systemMessage, userMessage, response.getOutput().getText());
 
-        // Execute the action requested by the LLM
-        ActionResult result = executeAction(agentOutput);
+            // Execute the action requested by the LLM
+            ActionResult result = executeAction(agentOutput);
 
-        AgentStep step = AgentStep
+            step = AgentStep
+                    .builder()
+                    .input(userInput)
+                    .context(context)
+                    .result(result)
+                    .action(agentOutput.getAction())
+                    .isFinal(agentOutput.isFinal())
+                    .reasoning(agentOutput.getReasoning())
+                    .build();
+
+            // If the action is not completed, store it for potential continuation
+            if (step.needsContinuation()) {
+                ongoingActions.put(result.getActionId(), step);
+            }
+        } catch (IllegalArgumentException e) {
+            step = errorStep(userInput, context, e);
+        }
+
+        executedSteps.add(step);
+        return step;
+    }
+
+    private AgentStep errorStep(String userInput, Map<String, String> context, IllegalArgumentException e) {
+        ActionResult errorResult = ActionResult.failed(
+                "Agent failed at invoking an action with error: " + e.getMessage(),
+                "The agent failed at invoking an action.");
+
+        ActionInvocation actionInvocation = ActionInvocation.builder()
+                .name("outputMessage")
+                .parameters(Map.of(
+                        "message", "The agent failed at invoking an action and will try again."
+                ))
+                .build();
+
+        return AgentStep
                 .builder()
                 .input(userInput)
                 .context(context)
-                .result(result)
-                .action(agentOutput.getAction())
-                .isFinal(agentOutput.isFinal())
-                .reasoning(agentOutput.getReasoning())
+                .result(errorResult)
+                .action(actionInvocation)
+                .isFinal(false)
+                .reasoning("")
                 .build();
-
-        executedSteps.add(step);
-
-        // If the action is not completed, store it for potential continuation
-        if (step.needsContinuation()) {
-            ongoingActions.put(result.getActionId(), step);
-        }
-
-        return step;
     }
 
     /**
@@ -279,7 +308,7 @@ public class ReActAgent implements Agent {
 
     private ReActAgentOutput parseNextAction(BeanOutputConverter<ReActAgentOutput> outputConverter, Generation response) {
         if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getText())) {
-            return emptyAction("");
+            throw new IllegalArgumentException("Invoked action is null or empty");
         }
 
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
@@ -296,22 +325,9 @@ public class ReActAgent implements Agent {
         try {
             return outputConverter.convert(content);
         } catch (Exception e) {
-            log.debug("Failed at parsing agent ouput, error: {}", e.getMessage());
-            return emptyAction(response.getOutput().getText());
+            log.debug("Failed at parsing agent output, error: {}", e.getMessage());
+            throw new IllegalArgumentException("Failed to parse agent output", e);
         }
-    }
-
-    private ReActAgentOutput emptyAction(String content) {
-        return ReActAgentOutput.builder()
-                .action(ActionInvocation.builder()
-                        .name("outputMessage")
-                        .parameters(Map.of(
-                                "message", content
-                        ))
-                        .build())
-                .reasoning("The agent failed at invoking an action, here is the raw output.")
-                .isFinal(false)
-                .build();
     }
 
     @VisibleForTesting
@@ -329,14 +345,14 @@ public class ReActAgent implements Agent {
         List<ActionDTO> actionsMap = new ArrayList<>();
 
         for (Action action : actions) {
-            ActionDTO actionDTO = ActionDTO.builder()
+            // Build action representation with both legacy parameters and JSON schema
+            ActionDTO.ActionDTOBuilder builder = ActionDTO.builder()
                     .name(action.getName())
                     .description(action.getDescription())
-                    .parameters(action.getParameters())
-                    .data(action.getData(context))
-                    .build();
-
-            actionsMap.add(actionDTO);
+                    .parameters(action.getJsonSchema())
+                    .data(action.getData(context));
+            
+            actionsMap.add(builder.build());
         }
 
         try {
@@ -372,7 +388,27 @@ public class ReActAgent implements Agent {
             ActionInvocation action = output.getAction();
             Optional<Action> matchingAction = availableActions.stream().filter(a -> a.getName().equals(action.getName())).findFirst();
             if (matchingAction.isPresent()) {
-                return matchingAction.get().apply(this, action.getParameters(), context);
+                Action actionToExecute = matchingAction.get();
+                
+                // Validate input against JSON schema if available
+                JsonNode schema = actionToExecute.getJsonSchema();
+                if (schema != null) {
+                    List<String> validationErrors = JsonSchemaUtils.validateAgainstSchema(schema, action.getParameters());
+                    if (!validationErrors.isEmpty()) {
+                        // Return validation error to the agent
+                        StringBuilder errorBuilder = new StringBuilder("Invalid input parameters:\n");
+                        for (String error : validationErrors) {
+                            errorBuilder.append("- ").append(error).append("\n");
+                        }
+                        
+                        return ActionResult.failed(
+                                errorBuilder.toString(),
+                                "Input parameters failed schema validation"
+                        );
+                    }
+                }
+                
+                return actionToExecute.apply(this, action.getParameters(), context);
             } else {
                 return ActionResult.failed(
                         String.format("The action '%s' does not exist, use only action available to you.", action.getName()),

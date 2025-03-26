@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.rag.service.RagChunk;
 import org.opengpa.rag.service.RagDocument;
@@ -26,7 +27,7 @@ import java.util.stream.IntStream;
 @Component
 @Slf4j
 @ConditionalOnProperty(prefix = "opengpa.actions", name = "rag", havingValue = "internal", matchIfMissing = false)
-public class RagAction implements Action {
+public class RagAction extends LegacyActionAdapter {
 
     public static final String NAME = "rag_search";
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -75,7 +76,7 @@ public class RagAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> input, Map<String, String> context) {
         String query = input.get("query");
         if (query == null || query.isEmpty()) {
             return errorResult("An error occurred while attempting to perform RAG search", "The query parameter is missing or has an empty value.");

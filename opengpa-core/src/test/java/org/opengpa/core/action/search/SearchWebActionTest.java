@@ -60,7 +60,7 @@ class SearchWebActionTest {
     @Test
     void testApplyWithValidQuery() throws IOException {
         String query = "test query";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("query", query);
 
         searchWebAction = new SearchWebAction() {
@@ -88,7 +88,7 @@ class SearchWebActionTest {
 
     @Test
     void testApplyWithEmptyQuery() {
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("query", "");
 
         ActionResult result = searchWebAction.apply(agent, request, Collections.emptyMap());
@@ -100,7 +100,7 @@ class SearchWebActionTest {
 
     @Test
     void testApplyWithMissingQuery() {
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
 
         ActionResult result = searchWebAction.apply(agent, request, Collections.emptyMap());
 
@@ -112,7 +112,7 @@ class SearchWebActionTest {
     @Test
     void testApplyWithExceptionDuringSearch() {
         String query = "test query";
-        Map<String, String> request = new HashMap<>();
+        Map<String, Object> request = new HashMap<>();
         request.put("query", query);
 
         searchWebAction = new SearchWebAction() {

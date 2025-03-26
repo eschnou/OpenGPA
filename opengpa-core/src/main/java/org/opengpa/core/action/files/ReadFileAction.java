@@ -3,6 +3,7 @@ package org.opengpa.core.action.files;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 @Component
 @ConditionalOnProperty(prefix="opengpa.actions.files", name="enabled", havingValue = "true", matchIfMissing = false)
-public class ReadFileAction implements Action {
+public class ReadFileAction extends LegacyActionAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(ReadFileAction.class);
 
@@ -46,7 +47,7 @@ public class ReadFileAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Reading file {} for agent {}", request.get("filename"), agent.getId());
         Optional<Document> document = workspace.getDocument(agent.getId(), request.get("filename"));
         if (document.isPresent()) {

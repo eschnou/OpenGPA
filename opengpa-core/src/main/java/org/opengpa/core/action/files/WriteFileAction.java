@@ -3,6 +3,7 @@ package org.opengpa.core.action.files;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.LegacyActionAdapter;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 @Component
 @ConditionalOnProperty(prefix="opengpa.actions.files", name="enabled", havingValue = "true", matchIfMissing = false)
-public class WriteFileAction implements Action {
+public class WriteFileAction extends LegacyActionAdapter {
 
     private static final Logger log = LoggerFactory.getLogger(WriteFileAction.class);
 
@@ -48,7 +49,7 @@ public class WriteFileAction implements Action {
     }
 
     @Override
-    public ActionResult apply(Agent agent, Map<String, String> request,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> request,  Map<String, String> context) {
         log.debug("Writing content to file {}", request.get("filename"));
 
         String filename = request.get("filename");

@@ -14,7 +14,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-ai.version>1.0.0.M1</spring-ai.version>
+        <spring-ai.version>1.0.0-M6</spring-ai.version>
         <springboot.version>3.2.10</springboot.version>
         <springdoc.version>1.6.14</springdoc.version>
         <vaadin.version>24.3.12</vaadin.version>
@@ -27,6 +27,7 @@
         <module>opengpa-server</module>
         <module>opengpa-actions</module>
         <module>opengpa-rag</module>
+        <module>opengpa-mcp</module>
     </modules>
 
     <scm>

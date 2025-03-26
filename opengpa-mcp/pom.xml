@@ -11,10 +11,10 @@
     </parent>
 
     <groupId>org.opengpa</groupId>
-    <artifactId>opengpa-rag</artifactId>
+    <artifactId>opengpa-mcp</artifactId>
     <version>0.4-SNAPSHOT</version>
     <name>opengpa rag</name>
-    <description>RAG implementation for OpenGPA</description>
+    <description>MCP support for OpenGPA</description>
 
     <properties>
         <java.version>21</java.version>
@@ -78,14 +78,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-json</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
 
 
         <!-- OpenGPA -->
@@ -102,14 +94,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-pgvector-store-spring-boot-starter</artifactId>
-        </dependency>
-
-        <!-- PDF Processing -->
-        <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>2.0.24</version>
+            <artifactId>spring-ai-mcp-client-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- Helpers -->

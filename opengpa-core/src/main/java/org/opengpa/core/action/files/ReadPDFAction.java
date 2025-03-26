@@ -111,7 +111,7 @@ public class ReadPDFAction implements Action {
             
             return ActionResult.builder()
                     .status(ActionResult.Status.SUCCESS)
-                    .result(response.getOutput().getContent())
+                    .result(response.getOutput().getText())
                     .summary(String.format("Successfully read PDF %s and answered query about its content.", filename))
                     .build();
             

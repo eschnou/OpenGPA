@@ -7,12 +7,12 @@ import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.workspace.Document;
 import org.opengpa.core.workspace.Workspace;
-import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.model.Media;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -92,7 +92,7 @@ public class AnalyzePictureAction implements Action {
             
             return ActionResult.builder()
                     .status(ActionResult.Status.SUCCESS)
-                    .result(response.getOutput().getContent())
+                    .result(response.getOutput().getText())
                     .summary(String.format("Successfully analyzed image %s with query: %s", filename, formatQuery(query)))
                     .build();
             

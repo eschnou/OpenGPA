@@ -100,7 +100,7 @@ public class RagAction implements Action {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .result(prepareResponse(response.getOutput().getContent()))
+                .result(prepareResponse(response.getOutput().getText()))
                 .summary(String.format("Searched internal documents for '" + query + "'"))
                 .build();
     }
@@ -164,7 +164,7 @@ public class RagAction implements Action {
         return chunks.stream()
                 .map(chunk -> {
                     Map<String, String> d = new HashMap<>();
-                    d.put("content", chunk.getContent());
+                    d.put("content", chunk.getText());
                     d.put("chunk_id", String.valueOf(chunk.getId()));
                     return d;
                 }).toList();

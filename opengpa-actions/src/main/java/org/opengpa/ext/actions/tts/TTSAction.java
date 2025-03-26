@@ -58,10 +58,10 @@ public class TTSAction implements Action {
     @Override
     public ActionResult apply(Agent agent, Map<String, String> input, Map<String, String> context) {
         OpenAiAudioSpeechOptions speechOptions = OpenAiAudioSpeechOptions.builder()
-                .withModel("tts-1")
-                .withVoice(getVoiceFromInput(input.get("voice")))
-                .withResponseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
-                .withSpeed(1.0f)
+                .model("tts-1")
+                .voice(getVoiceFromInput(input.get("voice")))
+                .responseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
+                .speed(1.0f)
                 .build();
 
         SpeechPrompt speechPrompt = new SpeechPrompt(input.get("input"), speechOptions);

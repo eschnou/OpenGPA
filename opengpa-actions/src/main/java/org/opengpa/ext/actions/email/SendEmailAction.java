@@ -10,14 +10,15 @@ import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
+import org.opengpa.core.agent.react.ReActAgentOutput;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaOptions;
-import org.springframework.ai.parser.BeanOutputParser;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
@@ -90,13 +91,13 @@ public class SendEmailAction implements Action {
         String request = input.get("content");
 
         // Prepare system prompt
-        var outputParser = new BeanOutputParser<>(EmailWriterResult.class);
+        BeanOutputConverter<EmailWriterResult> outputConverter = new BeanOutputConverter<>(EmailWriterResult.class);
         PromptTemplate userPrompt = new PromptTemplate(PROMPT);
         org.springframework.ai.chat.messages.Message userMessage = userPrompt.createMessage(
                 Map.of("request", request,
                         "fromAddress", emailConfig.getFromAddress(),
                         "fromName", emailConfig.getFromName(),
-                        "format", outputParser.getFormat()));
+                        "format", outputConverter.getFormat()));
 
         // Prepare the final prompt and add model specific options
         ChatOptions chatOptions = getOptions();
@@ -104,7 +105,7 @@ public class SendEmailAction implements Action {
 
         // Query the LLM (our 'brain') to decide on email content
         Generation response = chatModel.call(prompt).getResult();
-        Optional<EmailWriterResult> generatedEmail = parseResult(outputParser, response);
+        Optional<EmailWriterResult> generatedEmail = parseResult(outputConverter, response);
 
         // Verify we have proper content
         if (generatedEmail.isEmpty()) {
@@ -200,14 +201,14 @@ public class SendEmailAction implements Action {
         Transport.send(message);
     }
 
-    private Optional<EmailWriterResult> parseResult(BeanOutputParser<EmailWriterResult> outputParser, Generation response) {
-        if (response == null || response.getOutput() == null || Strings.isBlank(response.getOutput().getContent())) {
+    private Optional<EmailWriterResult> parseResult(BeanOutputConverter<EmailWriterResult> outputConverter, Generation response) {
+        if (response == null || response.getOutput() == null || Strings.isBlank(response.getOutput().getText())) {
             return Optional.empty();
         }
 
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
-        String content = response.getOutput().getContent();
-        if (response.getOutput().getContent().startsWith("```")) {
+        String content = response.getOutput().getText();
+        if (response.getOutput().getText().startsWith("```")) {
             Pattern pattern = Pattern.compile("```[a-z]*(.*)```", Pattern.DOTALL);
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
@@ -217,7 +218,7 @@ public class SendEmailAction implements Action {
 
         // Attempt to parse the json to the corresponding ActionOutput
         try {
-            return Optional.of(outputParser.parse(content));
+            return Optional.of(outputConverter.convert(content));
         } catch (Exception e) {
             log.debug("Failed at parsing agent output, error: {}", e.getMessage());
             return Optional.empty();

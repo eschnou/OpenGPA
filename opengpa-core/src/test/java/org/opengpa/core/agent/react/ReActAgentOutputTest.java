@@ -1,7 +1,7 @@
 package org.opengpa.core.agent.react;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.ai.parser.BeanOutputParser;
+import org.springframework.ai.converter.BeanOutputConverter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -31,15 +31,17 @@ class ReActAgentOutputTest {
 
     @Test
     public void testSimpleAction() {
-        var outputParser = new BeanOutputParser<>(ReActAgentOutput.class);
-        ReActAgentOutput output = outputParser.parse(SIMPLE_ACTION);
+        BeanOutputConverter<ReActAgentOutput> outputConverter = new BeanOutputConverter<>(ReActAgentOutput.class);
+
+        ReActAgentOutput output = outputConverter.convert(SIMPLE_ACTION);
         assertEquals("Zverev match schedule June 7 2024", output.getAction().getParameters().get("query"));
     }
 
     @Test
     public void testSpecialCharacters() {
-        var outputParser = new BeanOutputParser<>(ReActAgentOutput.class);
-        ReActAgentOutput output = outputParser.parse(SPECIAL_CHARACTERS);
+        BeanOutputConverter<ReActAgentOutput> outputConverter = new BeanOutputConverter<>(ReActAgentOutput.class);
+
+        ReActAgentOutput output = outputConverter.convert(SPECIAL_CHARACTERS);
         assertEquals("output_message", output.getAction().getName());
     }
 

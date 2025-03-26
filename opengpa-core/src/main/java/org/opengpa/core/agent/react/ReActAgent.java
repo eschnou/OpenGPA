@@ -126,9 +126,6 @@ public class ReActAgent implements Agent {
         // context with the new one.
         context = updateContext(context);
 
-        // Fetch the MCP actions if available
-
-
         // Prepare the system prompt. This one contains non user/task specific
         // information such as the list of possible actions.
         PromptTemplate systemPrompt = new SystemPromptTemplate(stepSystemPromptResource);

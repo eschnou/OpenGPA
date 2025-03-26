@@ -55,14 +55,31 @@ public class McpSyncAction implements Action {
     public ActionResult apply(Agent agent, Map<String, Object> input, Map<String, String> context) {
         McpSchema.CallToolRequest request = new McpSchema.CallToolRequest(getName(), input);
         McpSchema.CallToolResult callToolResult = client.callTool(request);
+        if (callToolResult == null) {
+            return ActionResult.failed(
+                    String.format("Calling %s action failed without errors.", tool.name()),
+                    "Failed at executing the requested action."
+            );
+        }
 
+        Boolean error = callToolResult.isError() == null ? false : callToolResult.isError();
         ActionResult actionResult = ActionResult.builder()
-                .status(callToolResult.isError() ? ActionResult.Status.FAILURE : ActionResult.Status.SUCCESS)
+                .status(error  ? ActionResult.Status.FAILURE : ActionResult.Status.SUCCESS)
                 .result(callToolResult.content())
                 .actionId(UUID.randomUUID().toString())
-                .summary(String.format("I've executed the %s tool from %s service", tool.name(), client.getClientInfo().name()))
+                .summary(String.format("I've executed the %s tool from %s service", tool.name(), client.getServerInfo().name()))
                 .build();
 
         return actionResult;
+    }
+
+    @Override
+    public ActionResult continueAction(Agent agent, String actionId, Map<String, String> stateData, Map<String, String> context) {
+        return Action.super.continueAction(agent, actionId, stateData, context);
+    }
+
+    @Override
+    public ActionResult cancelAction(Agent agent, String actionId) {
+        return Action.super.cancelAction(agent, actionId);
     }
 }

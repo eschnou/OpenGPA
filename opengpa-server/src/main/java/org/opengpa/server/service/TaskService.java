@@ -2,25 +2,19 @@ package org.opengpa.server.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.opengpa.core.action.Action;
-import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.agent.AgentStep;
 import org.opengpa.core.agent.react.ReActAgent;
 import org.opengpa.core.workspace.Workspace;
+import org.opengpa.mcp.McpActionProvider;
 import org.opengpa.server.config.ApplicationConfig;
-import org.opengpa.server.exceptions.BadRequestException;
-import org.opengpa.server.exceptions.ResourceNotFoundException;
 import org.opengpa.server.exceptions.TaskNotFoundException;
 import org.opengpa.server.helper.topic.TopicService;
 import org.opengpa.server.model.Task;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.concurrent.ListenableFuture;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -39,15 +33,22 @@ public class TaskService {
     private final Workspace workspace;
     private final TopicService topicService;
     private final List<Action> actions;
+    private final McpActionProvider mcpActionProvider;
     private final ApplicationConfig applicationConfig;
 
     @Autowired
-    public TaskService(ChatModel chatModel, Workspace workspace, TopicService topicService, List<Action> actions, ApplicationConfig applicationConfig) {
+    public TaskService(ChatModel chatModel, Workspace workspace, TopicService topicService, McpActionProvider mcpActionProvider, List<Action> actions, ApplicationConfig applicationConfig) {
         this.chatModel = chatModel;
         this.workspace = workspace;
         this.topicService = topicService;
-        this.actions = actions;
+        this.mcpActionProvider = mcpActionProvider;
         this.applicationConfig = applicationConfig;
+        this.actions = actions;
+
+        List<Action> mcpActions = mcpActionProvider.getMCPActions();
+        if (mcpActions != null) {
+            this.actions.addAll(mcpActions);
+        }
     }
 
     public Task plan(String username, String input, Map<String, String> additionalInputs) {

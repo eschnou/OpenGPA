@@ -21,7 +21,7 @@ public class McpActionProvider {
         List<Action> actions = new ArrayList<>();
         for (McpSyncClient mcpSyncClient : mcpSyncClients) {
             for (McpSchema.Tool tool : mcpSyncClient.listTools().tools()) {
-                log.debug("MCP client {} - tool {}", mcpSyncClient.getClientInfo().name(), tool.name());
+                log.debug("MCP client {} - tool {}", mcpSyncClient.getServerInfo().name(), tool.name());
                 actions.add(new McpSyncAction(mcpSyncClient, tool));
             }
         }

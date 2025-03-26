@@ -3,12 +3,12 @@ package org.opengpa.core.agent.react;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.opengpa.core.action.JsonSchemaUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.opengpa.core.action.Action;
 import org.opengpa.core.action.ActionResult;
+import org.opengpa.core.action.JsonSchemaUtils;
 import org.opengpa.core.agent.ActionInvocation;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.agent.AgentStep;
@@ -21,9 +21,9 @@ import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaOptions;
-import org.springframework.ai.parser.BeanOutputParser;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -135,12 +135,13 @@ public class ReActAgent implements Agent {
                 "files", renderFiles(workspace.getDocuments(getId()))));
 
         // Prepare the user prompt. This one contains all user/task specific actions.
-        var outputParser = new BeanOutputParser<>(ReActAgentOutput.class);
+        BeanOutputConverter<ReActAgentOutput> outputConverter = new BeanOutputConverter<>(ReActAgentOutput.class);
+
         PromptTemplate userPrompt = new PromptTemplate(stepUserPromptResource);
         Message userMessage = userPrompt.createMessage(
                 Map.of("task", task,
                         "instructions", userInput,
-                        "format", outputParser.getFormat(),
+                        "format", outputConverter.getFormat(),
                         "history", renderPreviousSteps(executedSteps)));
 
         // Prepare the final prompt and add model specific options
@@ -152,8 +153,8 @@ public class ReActAgent implements Agent {
 
         AgentStep step;
         try {
-            ReActAgentOutput agentOutput = parseNextAction(outputParser, response);
-            logInteraction(systemMessage, userMessage, response.getOutput().getContent());
+            ReActAgentOutput agentOutput = parseNextAction(outputConverter, response);
+            logInteraction(systemMessage, userMessage, response.getOutput().getText());
 
             // Execute the action requested by the LLM
             ActionResult result = executeAction(agentOutput);
@@ -302,14 +303,14 @@ public class ReActAgent implements Agent {
         return this.context;
     }
 
-    private ReActAgentOutput parseNextAction(BeanOutputParser<ReActAgentOutput> outputParser, Generation response) {
-        if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getContent())) {
+    private ReActAgentOutput parseNextAction(BeanOutputConverter<ReActAgentOutput> outputConverter, Generation response) {
+        if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getText())) {
             throw new IllegalArgumentException("Invoked action is null or empty");
         }
 
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
-        String content = response.getOutput().getContent();
-        if (response.getOutput().getContent().startsWith("```")) {
+        String content = response.getOutput().getText();
+        if (response.getOutput().getText().startsWith("```")) {
             Pattern pattern = Pattern.compile("```[a-z]*(.*)```", Pattern.DOTALL);
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
@@ -319,7 +320,7 @@ public class ReActAgent implements Agent {
 
         // Attempt to parse the json to the corresponding ActionOutput
         try {
-            return outputParser.parse(content);
+            return outputConverter.convert(content);
         } catch (Exception e) {
             log.debug("Failed at parsing agent output, error: {}", e.getMessage());
             throw new IllegalArgumentException("Failed to parse agent output", e);

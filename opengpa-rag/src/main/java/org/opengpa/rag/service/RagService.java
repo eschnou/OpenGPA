@@ -118,7 +118,7 @@ public class RagService {
                     Document d = chunks.get(index);
                     RagChunk chunk = new RagChunk();
                     chunk.setChunkId(d.getId());
-                    chunk.setContent(d.getContent());
+                    chunk.setContent(d.getText());
                     chunk.setDocument(ragDocument);
                     chunk.setIndex(index);
                     return chunk;
@@ -136,7 +136,7 @@ public class RagService {
     }
 
     public List<Document> searchDocuments(String username, String query) {
-        SearchRequest searchRequest = SearchRequest.query(query).withFilterExpression(String.format("username == '%s'", username));
+        SearchRequest searchRequest = SearchRequest.builder().query(query).filterExpression(String.format("username == '%s'", username)).build();
         return vectorStore.similaritySearch(searchRequest);
     }
 

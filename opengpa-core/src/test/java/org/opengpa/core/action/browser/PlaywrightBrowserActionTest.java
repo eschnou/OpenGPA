@@ -14,6 +14,7 @@ import org.opengpa.core.action.ActionParameter;
 import org.opengpa.core.action.ActionResult;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.config.PlaywrightConfig;
+import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
@@ -105,14 +106,14 @@ class PlaywrightBrowserActionTest {
         when(page.title()).thenReturn("Example Page");
         when(page.content()).thenReturn("<html><body>Example content</body></html>");
 
-        Generation generation = new Generation("This page is about examples.");
+        Generation generation = new Generation(new AssistantMessage("This page is about examples."));
         ChatResponse chatResponse = new ChatResponse(List.of(generation));
         when(chatModel.call(any(Prompt.class))).thenReturn(chatResponse);
 
         ActionResult result = playwrightBrowserAction.apply(agent, input, Collections.emptyMap());
 
         assertEquals(ActionResult.Status.SUCCESS, result.getStatus());
-        assertEquals("Processed webpage 'Example Page' from example.com", result.getSummary());
+        assertEquals("Processed webpage Example Page from example.com.", result.getSummary());
         assertEquals("This page is about examples.", result.getResult());
         assertNull(result.getError());
 

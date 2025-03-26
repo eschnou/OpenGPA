@@ -32,7 +32,7 @@ class ReActAgentTest {
                 "  \"data\" : { },\n" +
                 "  \"parameters\" : {\n" +
                 "    \"type\" : \"object\",\n" +
-                "    \"title\" : \"Raw Browser Parameters\",\n" +
+                "    \"title\" : \"Action Parameters\",\n" +
                 "    \"properties\" : {\n" +
                 "      \"url\" : {\n" +
                 "        \"type\" : \"string\",\n" +

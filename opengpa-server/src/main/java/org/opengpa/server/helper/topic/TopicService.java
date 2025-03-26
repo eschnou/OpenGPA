@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.opengpa.core.agent.react.ReActAgentOutput;
 import org.opengpa.server.model.Task;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatModel;
@@ -11,9 +12,9 @@ import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.ollama.api.OllamaOptions;
-import org.springframework.ai.parser.BeanOutputParser;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,11 +54,12 @@ public class TopicService {
 
     public Optional<TopicSummaryDTO> summarize(Task task) {
         // Prepare system prompt
-        var outputParser = new BeanOutputParser<>(TopicSummaryDTO.class);
+        BeanOutputConverter<TopicSummaryDTO> outputConverter = new BeanOutputConverter<>(TopicSummaryDTO.class);
+
         PromptTemplate userPrompt = new PromptTemplate(PROMPT);
         Message userMessage = userPrompt.createMessage(
                 Map.of("conversation", renderInteraction(task),
-                        "format", outputParser.getFormat()));
+                        "format", outputConverter.getFormat()));
 
         // Prepare the final prompt and add model specific options
         ChatOptions chatOptions = getOptions();
@@ -65,7 +67,7 @@ public class TopicService {
 
         // Query the LLM (our 'brain') to decide on route
         Generation response = chatModel.call(prompt).getResult();
-        Optional<TopicSummaryDTO> topicOutput = parseResult(outputParser, response);
+        Optional<TopicSummaryDTO> topicOutput = parseResult(outputConverter, response);
 
         if (topicOutput.isPresent()) {
             log.debug("Generated new topic for task={} with title={} and reason={}", task.getTaskId(), topicOutput.get().getTitle(), topicOutput.get().getReasoning());
@@ -84,14 +86,14 @@ public class TopicService {
         return null;
     }
 
-    private Optional<TopicSummaryDTO> parseResult(BeanOutputParser<TopicSummaryDTO> outputParser, Generation response) {
-        if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getContent())) {
+    private Optional<TopicSummaryDTO> parseResult(BeanOutputConverter<TopicSummaryDTO> outputConverter, Generation response) {
+        if (response == null | response.getOutput() == null | Strings.isBlank(response.getOutput().getText())) {
             return Optional.empty();
         }
 
         // Some LLM might ignore the directive and enclose the json within ```json which is good enough
-        String content = response.getOutput().getContent();
-        if (response.getOutput().getContent().startsWith("```")) {
+        String content = response.getOutput().getText();
+        if (response.getOutput().getText().startsWith("```")) {
             Pattern pattern = Pattern.compile("```[a-z]*(.*)```", Pattern.DOTALL);
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
@@ -101,7 +103,7 @@ public class TopicService {
 
         // Attempt to parse the json to the corresponding ActionOutput
         try {
-            return Optional.of(outputParser.parse(content));
+            return Optional.of(outputConverter.convert(content));
         } catch (Exception e) {
             log.debug("Failed at parsing agent ouput, error: {}", e.getMessage());
             return Optional.empty();

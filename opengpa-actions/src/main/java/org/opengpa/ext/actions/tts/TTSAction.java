@@ -109,10 +109,10 @@ public class TTSAction implements Action {
 
             TTSScriptEntry entry = scriptEntries.get(i);
             OpenAiAudioSpeechOptions speechOptions = OpenAiAudioSpeechOptions.builder()
-                    .withModel("tts-1")
-                    .withVoice(getVoiceFromInput(entry.getVoice()))
-                    .withResponseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
-                    .withSpeed(1.0f)
+                    .model("tts-1")
+                    .voice(getVoiceFromInput(entry.getVoice()))
+                    .responseFormat(OpenAiAudioApi.SpeechRequest.AudioResponseFormat.MP3)
+                    .speed(1.0f)
                     .build();
 
             SpeechPrompt speechPrompt = new SpeechPrompt(entry.getText(), speechOptions);

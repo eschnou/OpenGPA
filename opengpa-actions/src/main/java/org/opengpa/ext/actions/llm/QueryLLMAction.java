@@ -55,7 +55,7 @@ public class QueryLLMAction extends LegacyActionAdapter {
 
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
-                .result(response.getOutput().getContent())
+                .result(response.getOutput().getText())
                 .summary("I have queried the LLM with prompt=" + formatPrompt(prompt))
                 .build();
     }

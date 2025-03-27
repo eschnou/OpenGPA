@@ -82,7 +82,7 @@ a postgresql database (with pg_vector extension), the opengpa backend and the fr
 host.
 
 ```
-curl -O https://raw.githubusercontent.com/eschnou/opengpa-server/main/docker-compose.quickstart.yml
+curl -O https://raw.githubusercontent.com/eschnou/OpenGPA/main/docker-compose.quickstart.yml
 echo "OPENAI_API_KEY=your-key-here" > .env
 docker compose -f docker-compose.quickstart.yml up -d
 ```

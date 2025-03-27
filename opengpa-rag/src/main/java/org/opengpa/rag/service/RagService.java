@@ -90,7 +90,11 @@ public class RagService {
         ragDocumentRepository.save(ragDocument);
 
         CompletableFuture.runAsync(() -> {
-            indexChunks(chunks, ragDocument);
+            try {
+                indexChunks(chunks, ragDocument);
+            } catch (Exception e) {
+                log.error("Error during index chunks", e);
+            }
         }, executorService);
 
         return ragDocument;
@@ -197,5 +201,4 @@ public class RagService {
     public Optional<RagChunk> getChunk(String chunkId) {
         return ragChunkRepository.findById(chunkId);
     }
-
 }

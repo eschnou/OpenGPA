@@ -30,6 +30,7 @@ COPY --from=builder /build/pom.xml /app/
 COPY --from=builder /build/opengpa-core/pom.xml /app/opengpa-core/
 COPY --from=builder /build/opengpa-server/pom.xml /app/opengpa-server/
 COPY --from=builder /build/opengpa-actions/pom.xml /app/opengpa-actions/
+COPY --from=builder /build/opengpa-mcp/pom.xml /app/opengpa-mcp/
 COPY --from=builder /build/opengpa-rag/pom.xml /app/opengpa-rag/
 
 # Install Playwright browsers using Maven

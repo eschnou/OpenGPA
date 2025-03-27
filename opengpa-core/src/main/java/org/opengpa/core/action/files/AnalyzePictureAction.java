@@ -60,6 +60,11 @@ public class AnalyzePictureAction extends LegacyActionAdapter {
     }
 
     @Override
+    public String getCategory() {
+        return "core";
+    }
+
+    @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("filename", "Relative path of the image file to analyze in the agent workspace"),

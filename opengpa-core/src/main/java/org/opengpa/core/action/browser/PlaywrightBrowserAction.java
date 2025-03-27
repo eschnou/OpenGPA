@@ -38,7 +38,7 @@ public class PlaywrightBrowserAction extends LegacyActionAdapter {
             Question: %s
             Page title: %s
             Content:
-           
+            
             """;
     public static final String NAME = "browse_web";
 
@@ -77,6 +77,11 @@ public class PlaywrightBrowserAction extends LegacyActionAdapter {
     }
 
     @Override
+    public String getCategory() {
+        return "web";
+    }
+
+    @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("url", "The url of the page to load, must start with http or https."),
@@ -85,7 +90,7 @@ public class PlaywrightBrowserAction extends LegacyActionAdapter {
     }
 
     @Override
-    public ActionResult applyStringParams(Agent agent, Map<String, String> input,  Map<String, String> context) {
+    public ActionResult applyStringParams(Agent agent, Map<String, String> input, Map<String, String> context) {
         log.debug("Fetching url {} for agent {}", input.get("url"), agent.getId());
 
         String url = input.get("url");

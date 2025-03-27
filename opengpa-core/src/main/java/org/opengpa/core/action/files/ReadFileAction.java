@@ -38,6 +38,11 @@ public class ReadFileAction extends LegacyActionAdapter {
     public String getDescription() {
         return "Read a file with the given filename.";
     }
+    
+    @Override
+    public String getCategory() {
+        return "core";
+    }
 
     @Override
     public List<ActionParameter> getParameters() {

@@ -47,6 +47,11 @@ public class TTSAction implements Action {
     public String getDescription() {
         return "Generate an MP3 file with speech from a script with multiple voices";
     }
+    
+    @Override
+    public String getCategory() {
+        return "speech";
+    }
 
     @Override
     public JsonNode getJsonSchema() {

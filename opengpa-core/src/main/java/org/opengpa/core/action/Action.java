@@ -16,6 +16,10 @@ public interface Action {
 
     ActionResult apply(Agent agent, Map<String, Object> input, Map<String, String> context);
 
+    default String getCategory() {
+        return "core";
+    }
+
     default Map<String, Object> getData(Map<String, String> context) {
         return Collections.emptyMap();
     }

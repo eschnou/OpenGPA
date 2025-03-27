@@ -32,35 +32,61 @@ public class TaskService {
     private final ChatModel chatModel;
     private final Workspace workspace;
     private final TopicService topicService;
-    private final List<Action> actions;
-    private final McpActionProvider mcpActionProvider;
+    private final ActionCategoryService actionCategoryService;
     private final ApplicationConfig applicationConfig;
 
     @Autowired
-    public TaskService(ChatModel chatModel, Workspace workspace, TopicService topicService, McpActionProvider mcpActionProvider, List<Action> actions, ApplicationConfig applicationConfig) {
+    public TaskService(ChatModel chatModel, Workspace workspace, TopicService topicService, 
+                      ActionCategoryService actionCategoryService, ApplicationConfig applicationConfig) {
         this.chatModel = chatModel;
         this.workspace = workspace;
         this.topicService = topicService;
-        this.mcpActionProvider = mcpActionProvider;
+        this.actionCategoryService = actionCategoryService;
         this.applicationConfig = applicationConfig;
-        this.actions = actions;
-
-        List<Action> mcpActions = mcpActionProvider.getMCPActions();
-        if (mcpActions != null) {
-            this.actions.addAll(mcpActions);
-        }
     }
 
+    /**
+     * Creates a new task with all available actions.
+     * 
+     * @param username The username of the task owner
+     * @param input The user's input message
+     * @param additionalInputs Additional context for the task
+     * @return The created Task
+     */
     public Task plan(String username, String input, Map<String, String> additionalInputs) {
+        return plan(username, input, additionalInputs, null);
+    }
+    
+    /**
+     * Creates a new task with actions filtered by category.
+     * If enabledCategories is null or empty, all available actions will be used.
+     * 
+     * @param username The username of the task owner
+     * @param input The user's input message
+     * @param additionalInputs Additional context for the task
+     * @param enabledCategories List of category names to enable, or null/empty for all categories
+     * @return The created Task
+     */
+    public Task plan(String username, String input, Map<String, String> additionalInputs, List<String> enabledCategories) {
         List<Task> userTasks = tasks.getOrDefault(username, new ArrayList<>());
         additionalInputs.put("username", username);
 
-        ReActAgent agent = new ReActAgent(chatModel, workspace, actions, input, additionalInputs);
+        // Get actions for the enabled categories, or all actions if no categories are specified
+        List<Action> selectedActions = actionCategoryService.getActionsByCategories(enabledCategories);
+        
+        ReActAgent agent = new ReActAgent(chatModel, workspace, selectedActions, input, additionalInputs);
         if (applicationConfig.isLogPrompt()) {
             agent.enableLogging(applicationConfig.getLogFolder());
         }
 
-        Task task = Task.builder().created(ZonedDateTime.now()).context(additionalInputs).taskId(agent.getId()).agent(agent).title(input.substring(0, Math.min(25, input.length()))).build();
+        Task task = Task.builder()
+                .created(ZonedDateTime.now())
+                .context(additionalInputs)
+                .taskId(agent.getId())
+                .agent(agent)
+                .title(input.substring(0, Math.min(25, input.length())))
+                .enabledCategories(enabledCategories)
+                .build();
 
         userTasks.add(task);
         tasks.put(username, userTasks);
@@ -86,13 +112,15 @@ public class TaskService {
             taskSteps.add(step);
         }
 
+        // If first message, summarize and find a title, otherwise we do it when done.
+        if (steps.isEmpty() || step.isFinal()) {
+            topicService.summarize(task.get()).ifPresent(s -> {
+                task.get().setTitle(s.getTitle());
+                task.get().setDescription(s.getSummary());
+            });
+        }
+
         steps.put(taskId, taskSteps);
-
-        topicService.summarize(task.get()).ifPresent(s -> {
-            task.get().setTitle(s.getTitle());
-            task.get().setDescription(s.getSummary());
-        });
-
         return step;
     }
 

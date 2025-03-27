@@ -12,8 +12,9 @@ public class TaskMapper {
         dto.setCreated(task.getCreated());
         dto.setCompleted(task.getCompleted());
         dto.setTitle(task.getTitle());
-            dto.setRequest(task.getAgent().getTask());
+        dto.setRequest(task.getAgent().getTask());
         dto.setDescription(task.getDescription());
+        dto.setEnabledCategories(task.getEnabledCategories());
         return dto;
     }
 }

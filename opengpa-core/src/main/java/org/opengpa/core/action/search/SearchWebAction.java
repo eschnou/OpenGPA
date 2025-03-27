@@ -51,6 +51,11 @@ public class SearchWebAction extends LegacyActionAdapter {
     public String getDescription() {
         return "Search the web with the given query.";
     }
+    
+    @Override
+    public String getCategory() {
+        return "web";
+    }
 
     @Override
     public List<ActionParameter> getParameters() {

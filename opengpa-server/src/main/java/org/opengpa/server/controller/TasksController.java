@@ -62,7 +62,8 @@ public class TasksController {
             @Valid @RequestBody InputDTO inputDTO
     ) {
         log.debug("newTask username={} message={}", userDetails.getUsername(), inputDTO.getMessage());
-        Task task = taskService.plan(userDetails.getUsername(), inputDTO.getMessage(), new HashMap<>());
+        Task task = taskService.plan(userDetails.getUsername(), inputDTO.getMessage(), 
+                new HashMap<>(), inputDTO.getEnabledCategories());
         return ResponseEntity.ok(TaskMapper.toDTO(task));
     }
 

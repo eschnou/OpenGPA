@@ -40,6 +40,11 @@ public class McpSyncAction implements Action {
     public String getDescription() {
         return tool.description();
     }
+    
+    @Override
+    public String getCategory() {
+        return client.getServerInfo().name();
+    }
 
     @Override
     public JsonNode getJsonSchema() {

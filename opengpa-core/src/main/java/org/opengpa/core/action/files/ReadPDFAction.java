@@ -68,6 +68,11 @@ public class ReadPDFAction extends LegacyActionAdapter {
     }
 
     @Override
+    public String getCategory() {
+        return "core";
+    }
+
+    @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("file", "Relative path of the PDF file to read from the agent workspace"),

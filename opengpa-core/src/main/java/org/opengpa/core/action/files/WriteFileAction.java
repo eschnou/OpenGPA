@@ -41,6 +41,11 @@ public class WriteFileAction extends LegacyActionAdapter {
     }
 
     @Override
+    public String getCategory() {
+        return "core";
+    }
+
+    @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("filename", "Relative path of the file to write in the agent workspace"),

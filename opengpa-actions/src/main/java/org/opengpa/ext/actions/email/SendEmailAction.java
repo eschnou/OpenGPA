@@ -74,6 +74,11 @@ public class SendEmailAction extends LegacyActionAdapter {
     }
 
     @Override
+    public String getCategory() {
+        return "email";
+    }
+
+    @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("recipient", "The email address of the recipient"),

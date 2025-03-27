@@ -1,0 +1,46 @@
+{
+  "categories": [
+    {
+      "name": "core",
+      "displayName": "Core Tools",
+      "description": "Basic tools for interacting with the user and the environment",
+      "icon": "Settings"
+    },
+    {
+      "name": "web",
+      "displayName": "Web Tools",
+      "description": "Tools for browsing and searching the web",
+      "icon": "Globe"
+    },
+    {
+      "name": "filesystem",
+      "displayName": "File System",
+      "description": "Tools for reading and writing files",
+      "icon": "FolderOpen"
+    },
+    {
+      "name": "speech",
+      "displayName": "Speech Tools",
+      "description": "Tools for generating speech from text",
+      "icon": "Mic"
+    },
+    {
+      "name": "email",
+      "displayName": "Email Tools",
+      "description": "Tools for sending and composing emails",
+      "icon": "Mail"
+    },
+    {
+      "name": "rag",
+      "displayName": "Knowledge Search",
+      "description": "Tools for searching the internal documents",
+      "icon": "Document"
+    },
+    {
+      "name": "Odoo MCP Server",
+      "displayName": "Odoo",
+      "description": "Tools for interacting with you internal Odoo service",
+      "icon": "Document"
+    }
+  ]
+}

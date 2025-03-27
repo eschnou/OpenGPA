@@ -68,6 +68,11 @@ public class RagAction extends LegacyActionAdapter {
     }
 
     @Override
+    public String getCategory() {
+        return "rag";
+    }
+
+    @Override
     public List<ActionParameter> getParameters() {
         return List.of(
                 ActionParameter.from("query", "The query to search for in the document store."),

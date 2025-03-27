@@ -31,6 +31,8 @@ public class Task {
   private Map<String, String> context;
 
   private Status status;
+  
+  private List<String> enabledCategories;
 
   private Agent agent;
 

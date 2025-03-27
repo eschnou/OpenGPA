@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "odoo": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--network",
+        "odoo-network",
+        "-e",
+        "ODOO_URL",
+        "-e",
+        "ODOO_DB",
+        "-e",
+        "ODOO_USERNAME",
+        "-e",
+        "ODOO_PASSWORD",
+        "mcp/odoo"
+      ],
+      "env": {
+        "ODOO_URL": "http://odoo:8069",
+        "ODOO_DB": "transcode",
+        "ODOO_USERNAME": "laurent@transcode.be",
+        "ODOO_VERIFY_SSL": "0",
+        "ODOO_PASSWORD": "trustno1"
+      }
+    }
+  }
+}

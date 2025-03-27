@@ -28,6 +28,11 @@ public class MarkdownBrowserAction extends RawBrowserAction {
     public String getDescription() {
         return "Scrape the content at a given url in markdown format.";
     }
+    
+    @Override
+    public String getCategory() {
+        return "web";
+    }
 
     protected Map<String, String> formatResult(String url, String content) {
         return Map.of(

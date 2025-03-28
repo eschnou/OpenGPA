@@ -12,7 +12,7 @@
 
     <groupId>org.opengpa</groupId>
     <artifactId>opengpa-core</artifactId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
     <name>opengpa core</name>
     <description>Core of the opengpa agentic engine.</description>
 

@@ -175,6 +175,74 @@ spring.ai.mcp.client.stdio.servers-configuration=/path/to/mcp-servers.json
 }
 ```
 
+# 📚 Using OpenGPA Libraries
+
+OpenGPA is designed as a modular system with reusable libraries. You can integrate these libraries into your own Java applications.
+
+### Maven Repository
+
+Our libraries are hosted at `https://dist.opengpa.org/packages`. To use them, add the repository to your pom.xml:
+
+```xml
+<repositories>
+    <repository>
+        <id>opengpa-repository</id>
+        <name>OpenGPA Repository</name>
+        <url>https://dist.opengpa.org/packages</url>
+    </repository>
+</repositories>
+```
+
+### Available Modules
+
+#### Core Module
+
+The core module provides the foundational components for building agentic applications:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-core</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+#### Actions Module
+
+For integrating with the extended action catalog:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-actions</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+#### RAG Module
+
+For retrieval-augmented generation capabilities:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-rag</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+#### MCP Module
+
+For Model Context Protocol integration:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-mcp</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
 # Documentation
 - [Using local open-source LLM](documentation/offline.md)
 - [Creating a custom Action](documentation/actions.md)

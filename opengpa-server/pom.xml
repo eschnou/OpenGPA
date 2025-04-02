@@ -4,76 +4,34 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.0</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>org.opengpa</groupId>
+        <artifactId>opengpa</artifactId>
+        <version>0.5-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>org.opengpa</groupId>
     <artifactId>opengpa-server</artifactId>
-    <version>0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>opengpa server</name>
     <description>Standalone server and frontend.</description>
 
-    <properties>
-        <java.version>21</java.version>
-        <springboot.version>3.4.4</springboot.version>
-        <springdoc.version>1.6.14</springdoc.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-    </properties>
-
-    <repositories>
-        <repository>
-            <id>maven-central</id>
-            <url>https://repo.maven.apache.org/maven2/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/eschnou/OpenGPA</url>
-        </repository>
-    </distributionManagement>
-
     <dependencies>
+        <!-- OpenGPA modules -->
         <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-actions</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-rag</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opengpa</groupId>
             <artifactId>opengpa-mcp</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- Spring dependencies -->
@@ -106,18 +64,15 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
             <scope>runtime</scope>
         </dependency>
 
@@ -125,29 +80,27 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
         </dependency>
 
         <!-- Apache commons -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
         </dependency>
 
-        <!-- Because we can :-) -->
+        <!-- Utilities -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-
+        
+        <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -155,7 +108,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${springboot.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -167,5 +119,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

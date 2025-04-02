@@ -71,23 +71,23 @@ Make OpenGPA enterprise ready:
 - Auditing of task processing costs (token usage)
 - Instrumentation and observability
 
-## 🚀 Getting started
+# 🚀 Getting started
 
 In case of trouble, please reach out on [Discord](https://discord.gg/3XPsmCRNE2) for help!
 
-### Quickstart (no need to clone this repo)
+## Quickstart (no need to clone this repo)
 
 The `docker-compose.quickstart.yml` makes it easy to launch the latest stable version with 
 a postgresql database (with pg_vector extension), the opengpa backend and the frontend, on the same
 host.
 
 ```
-curl -O https://raw.githubusercontent.com/eschnou/opengpa-server/main/docker-compose.quickstart.yml
+curl -O https://raw.githubusercontent.com/eschnou/OpenGPA/main/docker-compose.quickstart.yml
 echo "OPENAI_API_KEY=your-key-here" > .env
 docker compose -f docker-compose.quickstart.yml up -d
 ```
 
-### Build and run with Docker
+## Build and run with Docker
 
 The simplest way to build and launch OpenGPA is using the provided Docker compose file:
 
@@ -100,7 +100,7 @@ This will build the opengpa image from source with all required dependencies (in
 dependencies for web browsing) and launch the service on port 3000. Opening http://localhost:3000 will lead you
 to the OpenAPI documentation.
 
-### Build and run the server
+## Build and run the server
 
 If you are on a Mac, the following should be enough to get you started and running this
 locally.  
@@ -122,7 +122,7 @@ OPENAI_API_KEY=sk-*** java -jar opengpa-server/target/opengpa-server-0.2.0.jar
 The `docker compose up -d db` lauches the database part from the docker compose as opengpa requires
 a postgres database with pg_vector for the RAG feature. 
 
-### 🖥️ User Interface
+# 🖥️ User Interface
 
 The User Interface is available in the [OpenGPA Frontend repository](https://github.com/eschnou/opengpa-frontend) and
 can be launched with docker.
@@ -134,7 +134,7 @@ docker build -t opengpa-frontend:latest .
 docker run -p 8000:8000 opengpa-frontend
 ```
 
-### 🐛 Debugging
+# 🐛 Debugging
 
 For debugging purposes you can log all interactions and prompts using the following config:
 ```
@@ -173,6 +173,74 @@ spring.ai.mcp.client.stdio.servers-configuration=/path/to/mcp-servers.json
       }
   }
 }
+```
+
+# 📚 Using OpenGPA Libraries
+
+OpenGPA is designed as a modular system with reusable libraries. You can integrate these libraries into your own Java applications.
+
+## Maven Repository
+
+Our libraries are hosted at `https://dist.opengpa.org/packages`. To use them, add the repository to your pom.xml:
+
+```xml
+<repositories>
+    <repository>
+        <id>opengpa-repository</id>
+        <name>OpenGPA Repository</name>
+        <url>https://dist.opengpa.org/packages</url>
+    </repository>
+</repositories>
+```
+
+## Available Modules
+
+### Core Module
+
+The core module provides the foundational components for building agentic applications:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-core</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+### Actions Module
+
+For integrating with the extended action catalog:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-actions</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+### RAG Module
+
+For retrieval-augmented generation capabilities:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-rag</artifactId>
+    <version>0.4.0</version>
+</dependency>
+```
+
+### MCP Module
+
+For Model Context Protocol integration:
+
+```xml
+<dependency>
+    <groupId>org.opengpa</groupId>
+    <artifactId>opengpa-mcp</artifactId>
+    <version>0.4.0</version>
+</dependency>
 ```
 
 # Documentation

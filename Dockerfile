@@ -27,6 +27,7 @@ RUN apt-get update && \
 
 # Copy pom files for Playwright installation
 COPY --from=builder /build/pom.xml /app/
+COPY --from=builder /build/playwright.xml /app/
 COPY --from=builder /build/opengpa-core/pom.xml /app/opengpa-core/
 COPY --from=builder /build/opengpa-server/pom.xml /app/opengpa-server/
 COPY --from=builder /build/opengpa-actions/pom.xml /app/opengpa-actions/
@@ -34,7 +35,7 @@ COPY --from=builder /build/opengpa-mcp/pom.xml /app/opengpa-mcp/
 COPY --from=builder /build/opengpa-rag/pom.xml /app/opengpa-rag/
 
 # Install Playwright browsers using Maven
-RUN mvn -f /app/pom.xml exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"
+RUN mvn -f /app/playwright.xml exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chromium"
 
 # Copy the built jar from the builder stage
 COPY --from=builder /build/opengpa-server/target/opengpa-server-*.jar /app/opengpa-server.jar

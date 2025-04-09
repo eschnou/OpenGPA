@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class OutputMessageAction extends LegacyActionAdapter {
+public class AskQuestionAction extends LegacyActionAdapter {
 
-    private static final Logger log = LoggerFactory.getLogger(OutputMessageAction.class);
-    public static final String NAME = "output_message";
+    private static final Logger log = LoggerFactory.getLogger(AskQuestionAction.class);
+    public static final String NAME = "ask_question";
 
-    public OutputMessageAction() {
-        log.info("Creating OutputMessageAction");
+    public AskQuestionAction() {
+        log.info("Creating AskQuestionAction");
     }
 
     @Override
@@ -26,7 +26,7 @@ public class OutputMessageAction extends LegacyActionAdapter {
 
     @Override
     public String getDescription() {
-        return "Output a message to the user, you MUST provide the message in the `message`argument.";
+        return "Ask a question to the user, you MUST provide the question in the `message` argument.";
     }
 
     @Override
@@ -38,7 +38,7 @@ public class OutputMessageAction extends LegacyActionAdapter {
 
     @Override
     public ActionResult applyStringParams(Agent agent, Map<String, String> input, Map<String, String> context) {
-        log.debug("Outputmessage action message={}", input.get("message"));
+        log.debug("AskQuestionAction action message={}", input.get("message"));
 
         String message = input.get("message");
         if (!StringUtils.hasText(message)) {
@@ -47,7 +47,7 @@ public class OutputMessageAction extends LegacyActionAdapter {
         return ActionResult.builder()
                 .status(ActionResult.Status.SUCCESS)
                 .result(message)
-                .summary("The message has been displayed to the user.")
+                .summary("The question has been displayed to the user.")
                 .build();
     }
 }

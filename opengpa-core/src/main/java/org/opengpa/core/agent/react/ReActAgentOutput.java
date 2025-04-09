@@ -12,11 +12,8 @@ import org.opengpa.core.agent.ActionInvocation;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@JsonPropertyOrder({ "reasoning", "is_final", "action"})
+@JsonPropertyOrder({ "reasoning", "action"})
 public class ReActAgentOutput {
-
-    @JsonProperty(value = "is_final", required = true)
-    private boolean isFinal;
 
     @JsonProperty(required = true)
     private String reasoning;

@@ -10,11 +10,10 @@ Searching the web is expensive, you should first leverage your internal knowlege
 and only proceed to web search if really needed and with a strong reason. For example, when discussing recent
 events or other factual matters in details, do search the web and don't assume your knowledge is correct.
 
-In order to ask a question, use the output_message action and set is_final to true. This will ensure the loop
-is stopped after displaying the message so that the user can type an answer.
+In order to ask a question, use the ask_question action.
 
-To finalize the task, you MUST output your answer to the user with the output_message action and the content
-in the message parameter.
+To finalize the task, you MUST output your answer to the user with the complete_task action and the content
+in the result parameter.
 
 The task is happening in this context:
 {context}

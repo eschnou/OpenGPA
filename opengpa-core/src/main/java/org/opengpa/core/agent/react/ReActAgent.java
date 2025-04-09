@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.jetbrains.annotations.VisibleForTesting;
-import org.opengpa.core.action.Action;
-import org.opengpa.core.action.ActionResult;
-import org.opengpa.core.action.JsonSchemaUtils;
+import org.opengpa.core.action.*;
 import org.opengpa.core.agent.ActionInvocation;
 import org.opengpa.core.agent.Agent;
 import org.opengpa.core.agent.AgentStep;
@@ -158,6 +156,7 @@ public class ReActAgent implements Agent {
 
             // Execute the action requested by the LLM
             ActionResult result = executeAction(agentOutput);
+            boolean isFinal = isFinal(agentOutput);
 
             step = AgentStep
                     .builder()
@@ -165,7 +164,7 @@ public class ReActAgent implements Agent {
                     .context(context)
                     .result(result)
                     .action(agentOutput.getAction())
-                    .isFinal(agentOutput.isFinal())
+                    .isFinal(isFinal)
                     .reasoning(agentOutput.getReasoning())
                     .build();
 
@@ -179,6 +178,16 @@ public class ReActAgent implements Agent {
 
         executedSteps.add(step);
         return step;
+    }
+
+    private boolean isFinal(ReActAgentOutput agentOutput) {
+        if (agentOutput.getAction().getName().equals(CompleteTaskAction.NAME)) {
+            return true;
+        } else if (agentOutput.getAction().getName().equals(AskQuestionAction.NAME)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private AgentStep errorStep(String userInput, Map<String, String> context, IllegalArgumentException e) {

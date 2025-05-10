@@ -41,7 +41,7 @@ src/main/resources/application-local.properties
 ### OpenGPA ###
 logs/
 application-local.properties
-mcp-servers-local.json
+mcp-servers-local*
 opengpa-server/src/main/bundles/
 
 ### Docker ###
